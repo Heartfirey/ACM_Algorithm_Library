@@ -1,0 +1,83 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k+kr}{inline}\PYG{+w}{ }\PYG{n}{LD}\PYG{+w}{ }\PYG{n+nf}{rt}\PYG{p}{(}\PYG{n}{LD}\PYG{+w}{ }\PYG{n}{x}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{sgn}\PYG{p}{(}\PYG{n}{x}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{==}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{+w}{ }\PYG{o}{?}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{+w}{ }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{sqrt}\PYG{p}{(}\PYG{n}{x}\PYG{p}{);}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+\PYG{k+kr}{inline}\PYG{+w}{ }\PYG{n}{LD}\PYG{+w}{ }\PYG{n+nf}{sq}\PYG{p}{(}\PYG{n}{LD}\PYG{+w}{ }\PYG{n}{x}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{x}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{n}{x}\PYG{p}{;}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+
+\PYG{c+c1}{// 圆弧}
+\PYG{c+c1}{// 如果按照 x 离散化，圆弧是 \PYGZdq{}横着的\PYGZdq{}}
+\PYG{c+c1}{// 记录圆弧的左端点、右端点、中点的坐标，和圆弧所在的圆}
+\PYG{c+c1}{// 调用构造要保证 c.x \PYGZhy{} x.r \PYGZlt{}= xl \PYGZlt{} xr \PYGZlt{}= c.y + x.r}
+\PYG{c+c1}{// t = 1 下圆弧 t = \PYGZhy{}1 上圆弧}
+\PYG{k}{struct} \PYG{n+nc}{CV}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{LD}\PYG{+w}{ }\PYG{n}{yl}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{yr}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{ym}\PYG{p}{;}\PYG{+w}{ }\PYG{n}{C}\PYG{+w}{ }\PYG{n}{o}\PYG{p}{;}\PYG{+w}{ }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{type}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{CV}\PYG{p}{()}\PYG{+w}{ }\PYG{p}{\PYGZob{}\PYGZcb{}}
+\PYG{+w}{    }\PYG{n}{CV}\PYG{p}{(}\PYG{n}{LD}\PYG{+w}{ }\PYG{n}{yl}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{LD}\PYG{+w}{ }\PYG{n}{yr}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{LD}\PYG{+w}{ }\PYG{n}{ym}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{C}\PYG{+w}{ }\PYG{n}{c}\PYG{p}{,}\PYG{+w}{ }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{t}\PYG{p}{)}
+\PYG{+w}{        }\PYG{o}{:}\PYG{+w}{ }\PYG{n}{yl}\PYG{p}{(}\PYG{n}{yl}\PYG{p}{),}\PYG{+w}{ }\PYG{n}{yr}\PYG{p}{(}\PYG{n}{yr}\PYG{p}{),}\PYG{+w}{ }\PYG{n}{ym}\PYG{p}{(}\PYG{n}{ym}\PYG{p}{),}\PYG{+w}{ }\PYG{n}{type}\PYG{p}{(}\PYG{n}{t}\PYG{p}{),}\PYG{+w}{ }\PYG{n}{o}\PYG{p}{(}\PYG{n}{c}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}\PYGZcb{}}
+\PYG{p}{\PYGZcb{};}
+
+\PYG{c+c1}{// 辅助函数 求圆上纵坐标}
+\PYG{n}{pair}\PYG{o}{\PYGZlt{}}\PYG{n}{LD}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{LD}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{c\PYGZus{}point\PYGZus{}eval}\PYG{p}{(}\PYG{k}{const}\PYG{+w}{ }\PYG{n}{C}\PYG{o}{\PYGZam{}}\PYG{+w}{ }\PYG{n}{c}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{LD}\PYG{+w}{ }\PYG{n}{x}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{LD}\PYG{+w}{ }\PYG{n}{d}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{fabs}\PYG{p}{(}\PYG{n}{c}\PYG{p}{.}\PYG{n}{p}\PYG{p}{.}\PYG{n}{x}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{x}\PYG{p}{),}\PYG{+w}{ }\PYG{n}{h}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{rt}\PYG{p}{(}\PYG{n}{sq}\PYG{p}{(}\PYG{n}{c}\PYG{p}{.}\PYG{n}{r}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{sq}\PYG{p}{(}\PYG{n}{d}\PYG{p}{));}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{n}{c}\PYG{p}{.}\PYG{n}{p}\PYG{p}{.}\PYG{n}{y}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{h}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{c}\PYG{p}{.}\PYG{n}{p}\PYG{p}{.}\PYG{n}{y}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{h}\PYG{p}{\PYGZcb{};}
+\PYG{p}{\PYGZcb{}}
+\PYG{c+c1}{// 构造上下圆弧}
+\PYG{n}{pair}\PYG{o}{\PYGZlt{}}\PYG{n}{CV}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{CV}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{pairwise\PYGZus{}curves}\PYG{p}{(}\PYG{k}{const}\PYG{+w}{ }\PYG{n}{C}\PYG{o}{\PYGZam{}}\PYG{+w}{ }\PYG{n}{c}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{LD}\PYG{+w}{ }\PYG{n}{xl}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{LD}\PYG{+w}{ }\PYG{n}{xr}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{LD}\PYG{+w}{ }\PYG{n}{yl1}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{yl2}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{yr1}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{yr2}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{ym1}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{ym2}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{tie}\PYG{p}{(}\PYG{n}{yl1}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{yl2}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{c\PYGZus{}point\PYGZus{}eval}\PYG{p}{(}\PYG{n}{c}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{xl}\PYG{p}{);}
+\PYG{+w}{    }\PYG{n}{tie}\PYG{p}{(}\PYG{n}{ym1}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{ym2}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{c\PYGZus{}point\PYGZus{}eval}\PYG{p}{(}\PYG{n}{c}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{xl}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{xr}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{/}\PYG{+w}{ }\PYG{l+m+mi}{2}\PYG{p}{);}
+\PYG{+w}{    }\PYG{n}{tie}\PYG{p}{(}\PYG{n}{yr1}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{yr2}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{c\PYGZus{}point\PYGZus{}eval}\PYG{p}{(}\PYG{n}{c}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{xr}\PYG{p}{);}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{n}{CV}\PYG{p}{(}\PYG{n}{yl1}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{yr1}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{ym1}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{c}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{p}{),}\PYG{+w}{ }\PYG{n}{CV}\PYG{p}{(}\PYG{n}{yl2}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{yr2}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{ym2}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{c}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{\PYGZhy{}1}\PYG{p}{)\PYGZcb{};}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{c+c1}{// 离散化之后同一切片内的圆弧应该是不相交的}
+\PYG{k+kt}{bool}\PYG{+w}{ }\PYG{k}{operator}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{+w}{ }\PYG{p}{(}\PYG{k}{const}\PYG{+w}{ }\PYG{n}{CV}\PYG{o}{\PYGZam{}}\PYG{+w}{ }\PYG{n}{a}\PYG{p}{,}\PYG{+w}{ }\PYG{k}{const}\PYG{+w}{ }\PYG{n}{CV}\PYG{o}{\PYGZam{}}\PYG{+w}{ }\PYG{n}{b}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{a}\PYG{p}{.}\PYG{n}{ym}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{+w}{ }\PYG{n}{b}\PYG{p}{.}\PYG{n}{ym}\PYG{p}{;}\PYG{+w}{ }\PYG{p}{\PYGZcb{}}
+\PYG{c+c1}{// 计算圆弧和连接圆弧端点的线段构成的封闭图形的面积}
+\PYG{n}{LD}\PYG{+w}{ }\PYG{n}{cv\PYGZus{}area}\PYG{p}{(}\PYG{k}{const}\PYG{+w}{ }\PYG{n}{CV}\PYG{o}{\PYGZam{}}\PYG{+w}{ }\PYG{n}{v}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{LD}\PYG{+w}{ }\PYG{n}{xl}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{LD}\PYG{+w}{ }\PYG{n}{xr}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{n}{LD}\PYG{+w}{ }\PYG{n}{l}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{rt}\PYG{p}{(}\PYG{n}{sq}\PYG{p}{(}\PYG{n}{xr}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{xl}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{sq}\PYG{p}{(}\PYG{n}{v}\PYG{p}{.}\PYG{n}{yr}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{v}\PYG{p}{.}\PYG{n}{yl}\PYG{p}{));}
+\PYG{+w}{    }\PYG{n}{LD}\PYG{+w}{ }\PYG{n}{d}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{rt}\PYG{p}{(}\PYG{n}{sq}\PYG{p}{(}\PYG{n}{v}\PYG{p}{.}\PYG{n}{o}\PYG{p}{.}\PYG{n}{r}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{sq}\PYG{p}{(}\PYG{n}{l}\PYG{+w}{ }\PYG{o}{/}\PYG{+w}{ }\PYG{l+m+mi}{2}\PYG{p}{));}
+\PYG{+w}{    }\PYG{n}{LD}\PYG{+w}{ }\PYG{n}{ang}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{atan}\PYG{p}{(}\PYG{n}{l}\PYG{+w}{ }\PYG{o}{/}\PYG{+w}{ }\PYG{n}{d}\PYG{+w}{ }\PYG{o}{/}\PYG{+w}{ }\PYG{l+m+mi}{2}\PYG{p}{);}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{ang}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{n+nf}{sq}\PYG{p}{(}\PYG{n}{v}\PYG{p}{.}\PYG{n}{o}\PYG{p}{.}\PYG{n}{r}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{d}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{n}{l}\PYG{+w}{ }\PYG{o}{/}\PYG{+w}{ }\PYG{l+m+mi}{2}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{n}{LD}\PYG{+w}{ }\PYG{n}{circle\PYGZus{}union}\PYG{p}{(}\PYG{k}{const}\PYG{+w}{ }\PYG{n}{vector}\PYG{o}{\PYGZlt{}}\PYG{n}{C}\PYG{o}{\PYGZgt{}\PYGZam{}}\PYG{+w}{ }\PYG{n}{cs}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{n}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{cs}\PYG{p}{.}\PYG{n}{size}\PYG{p}{();}
+\PYG{+w}{    }\PYG{n}{vector}\PYG{o}{\PYGZlt{}}\PYG{n}{LD}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{xs}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{FOR}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{i}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{n}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{xs}\PYG{p}{.}\PYG{n}{push\PYGZus{}back}\PYG{p}{(}\PYG{n}{cs}\PYG{p}{[}\PYG{n}{i}\PYG{p}{].}\PYG{n}{p}\PYG{p}{.}\PYG{n}{x}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{cs}\PYG{p}{[}\PYG{n}{i}\PYG{p}{].}\PYG{n}{r}\PYG{p}{);}
+\PYG{+w}{        }\PYG{n}{xs}\PYG{p}{.}\PYG{n}{push\PYGZus{}back}\PYG{p}{(}\PYG{n}{cs}\PYG{p}{[}\PYG{n}{i}\PYG{p}{].}\PYG{n}{p}\PYG{p}{.}\PYG{n}{x}\PYG{p}{);}
+\PYG{+w}{        }\PYG{n}{xs}\PYG{p}{.}\PYG{n}{push\PYGZus{}back}\PYG{p}{(}\PYG{n}{cs}\PYG{p}{[}\PYG{n}{i}\PYG{p}{].}\PYG{n}{p}\PYG{p}{.}\PYG{n}{x}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{cs}\PYG{p}{[}\PYG{n}{i}\PYG{p}{].}\PYG{n}{r}\PYG{p}{);}
+\PYG{+w}{        }\PYG{n}{FOR}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{j}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{i}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{n}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{k}{auto}\PYG{+w}{ }\PYG{n}{pts}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{c\PYGZus{}c\PYGZus{}intersection}\PYG{p}{(}\PYG{n}{cs}\PYG{p}{[}\PYG{n}{i}\PYG{p}{],}\PYG{+w}{ }\PYG{n}{cs}\PYG{p}{[}\PYG{n}{j}\PYG{p}{]);}
+\PYG{+w}{            }\PYG{k}{for}\PYG{+w}{ }\PYG{p}{(}\PYG{k}{auto}\PYG{o}{\PYGZam{}}\PYG{+w}{ }\PYG{n+nl}{p}\PYG{p}{:}\PYG{+w}{ }\PYG{n}{pts}\PYG{p}{)}\PYG{+w}{ }\PYG{n}{xs}\PYG{p}{.}\PYG{n}{push\PYGZus{}back}\PYG{p}{(}\PYG{n}{p}\PYG{p}{.}\PYG{n}{x}\PYG{p}{);}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{n}{sort}\PYG{p}{(}\PYG{n}{xs}\PYG{p}{.}\PYG{n}{begin}\PYG{p}{(),}\PYG{+w}{ }\PYG{n}{xs}\PYG{p}{.}\PYG{n}{end}\PYG{p}{());}
+\PYG{+w}{    }\PYG{n}{xs}\PYG{p}{.}\PYG{n}{erase}\PYG{p}{(}\PYG{n}{unique}\PYG{p}{(}\PYG{n}{xs}\PYG{p}{.}\PYG{n}{begin}\PYG{p}{(),}\PYG{+w}{ }\PYG{n}{xs}\PYG{p}{.}\PYG{n}{end}\PYG{p}{(),}\PYG{+w}{ }\PYG{p}{[](}\PYG{n}{LD}\PYG{+w}{ }\PYG{n}{x}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{LD}\PYG{+w}{ }\PYG{n}{y}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}\PYG{+w}{ }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{sgn}\PYG{p}{(}\PYG{n}{x}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{y}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{==}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{;}\PYG{+w}{ }\PYG{p}{\PYGZcb{}),}\PYG{+w}{ }\PYG{n}{xs}\PYG{p}{.}\PYG{n}{end}\PYG{p}{());}
+\PYG{+w}{    }\PYG{n}{LD}\PYG{+w}{ }\PYG{n}{ans}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{;}
+\PYG{+w}{    }\PYG{n}{FOR}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{i}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{+w}{ }\PYG{p}{(}\PYG{k+kt}{int}\PYG{p}{)}\PYG{+w}{ }\PYG{n}{xs}\PYG{p}{.}\PYG{n}{size}\PYG{p}{()}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{LD}\PYG{+w}{ }\PYG{n}{xl}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{xs}\PYG{p}{[}\PYG{n}{i}\PYG{p}{],}\PYG{+w}{ }\PYG{n}{xr}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{xs}\PYG{p}{[}\PYG{n}{i}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{p}{];}
+\PYG{+w}{        }\PYG{n}{vector}\PYG{o}{\PYGZlt{}}\PYG{n}{CV}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{intv}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{FOR}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{k}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{n}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{k}{auto}\PYG{o}{\PYGZam{}}\PYG{+w}{ }\PYG{n}{c}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{cs}\PYG{p}{[}\PYG{n}{k}\PYG{p}{];}
+\PYG{+w}{            }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{sgn}\PYG{p}{(}\PYG{n}{c}\PYG{p}{.}\PYG{n}{p}\PYG{p}{.}\PYG{n}{x}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{c}\PYG{p}{.}\PYG{n}{r}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{xl}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZlt{}=}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{+w}{ }\PYG{o}{\PYGZam{}\PYGZam{}}\PYG{+w}{ }\PYG{n}{sgn}\PYG{p}{(}\PYG{n}{c}\PYG{p}{.}\PYG{n}{p}\PYG{p}{.}\PYG{n}{x}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{c}\PYG{p}{.}\PYG{n}{r}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{xr}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZgt{}=}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{k}{auto}\PYG{+w}{ }\PYG{n}{t}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{pairwise\PYGZus{}curves}\PYG{p}{(}\PYG{n}{c}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{xl}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{xr}\PYG{p}{);}
+\PYG{+w}{                }\PYG{n}{intv}\PYG{p}{.}\PYG{n}{push\PYGZus{}back}\PYG{p}{(}\PYG{n}{t}\PYG{p}{.}\PYG{n}{first}\PYG{p}{);}\PYG{+w}{ }\PYG{n}{intv}\PYG{p}{.}\PYG{n}{push\PYGZus{}back}\PYG{p}{(}\PYG{n}{t}\PYG{p}{.}\PYG{n}{second}\PYG{p}{);}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{n}{sort}\PYG{p}{(}\PYG{n}{intv}\PYG{p}{.}\PYG{n}{begin}\PYG{p}{(),}\PYG{+w}{ }\PYG{n}{intv}\PYG{p}{.}\PYG{n}{end}\PYG{p}{());}
+
+\PYG{+w}{        }\PYG{n}{vector}\PYG{o}{\PYGZlt{}}\PYG{n}{LD}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{areas}\PYG{p}{(}\PYG{n}{intv}\PYG{p}{.}\PYG{n}{size}\PYG{p}{());}
+\PYG{+w}{        }\PYG{n}{FOR}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{i}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{intv}\PYG{p}{.}\PYG{n}{size}\PYG{p}{())}\PYG{+w}{ }\PYG{n}{areas}\PYG{p}{[}\PYG{n}{i}\PYG{p}{]}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{cv\PYGZus{}area}\PYG{p}{(}\PYG{n}{intv}\PYG{p}{[}\PYG{n}{i}\PYG{p}{],}\PYG{+w}{ }\PYG{n}{xl}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{xr}\PYG{p}{);}
+
+\PYG{+w}{        }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{cc}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{FOR}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{i}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{intv}\PYG{p}{.}\PYG{n}{size}\PYG{p}{())}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{k}{if}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{cc}\PYG{+w}{ }\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{n}{ans}\PYG{+w}{ }\PYG{o}{+=}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{intv}\PYG{p}{[}\PYG{n}{i}\PYG{p}{].}\PYG{n}{yl}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{intv}\PYG{p}{[}\PYG{n}{i}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{p}{].}\PYG{n}{yl}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{intv}\PYG{p}{[}\PYG{n}{i}\PYG{p}{].}\PYG{n}{yr}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{intv}\PYG{p}{[}\PYG{n}{i}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{p}{].}\PYG{n}{yr}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{p}{(}\PYG{n}{xr}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{n}{xl}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{/}\PYG{+w}{ }\PYG{l+m+mi}{2}\PYG{p}{;}
+\PYG{+w}{                }\PYG{n}{ans}\PYG{+w}{ }\PYG{o}{+=}\PYG{+w}{ }\PYG{n}{intv}\PYG{p}{[}\PYG{n}{i}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{p}{].}\PYG{n}{type}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{n}{areas}\PYG{p}{[}\PYG{n}{i}\PYG{+w}{ }\PYG{o}{\PYGZhy{}}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{p}{];}
+\PYG{+w}{                }\PYG{n}{ans}\PYG{+w}{ }\PYG{o}{\PYGZhy{}=}\PYG{+w}{ }\PYG{n}{intv}\PYG{p}{[}\PYG{n}{i}\PYG{p}{].}\PYG{n}{type}\PYG{+w}{ }\PYG{o}{*}\PYG{+w}{ }\PYG{n}{areas}\PYG{p}{[}\PYG{n}{i}\PYG{p}{];}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{            }\PYG{n}{cc}\PYG{+w}{ }\PYG{o}{+=}\PYG{+w}{ }\PYG{n}{intv}\PYG{p}{[}\PYG{n}{i}\PYG{p}{].}\PYG{n}{type}\PYG{p}{;}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{ans}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}
