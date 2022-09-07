@@ -1,4 +1,4 @@
-<img src="http://readme-typing-svg.herokuapp.com?font=Fira+Code&pause=1000&color=521DF7&center=true&multiline=true&width=500&height=80&lines=ACM+Template+Library+;Powered+by+HeartFireY%2C+eroengine%2C+yezzz" align="middle" />
+<center><img src="http://readme-typing-svg.herokuapp.com?font=Fira+Code&pause=1000&color=521DF7&center=true&multiline=true&width=1000&height=80&lines=ACM+Template+Library+;Powered+by+HeartFireY%2C+eroengine%2C+yezzz" align="middle" /></center>
 
 ## Part.1 Math
 
