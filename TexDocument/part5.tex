@@ -1,0 +1,831 @@
+\PassOptionsToPackage{unicode=true}{hyperref} % options for packages loaded elsewhere
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+
+% settings
+\usepackage{minted}
+%
+
+
+
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provides euro and other symbols
+\else % if luatex or xelatex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+    \setmainfont[]{Source Han Serif CN}
+    \setsansfont[]{Source Han Sans CN}
+    \setmonofont[Mapping=tex-ansi]{Source Code Pro}
+  \ifxetex
+    \usepackage{xeCJK}
+    \setCJKmainfont[]{Source Han Serif CN}
+  \fi
+  \ifluatex
+    \usepackage[]{luatexja-fontspec}
+    \setmainjfont[]{Source Han Serif CN}
+  \fi
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage[]{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\usepackage{hyperref}
+\hypersetup{
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage[margin=2cm]{geometry}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+
+% set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+
+\usepackage{minted}
+
+
+
+\date{}
+
+\title{\vspace{50mm} \huge Standard Code Library \\[20pt]}
+\author{F0RE1GNERS \\[10pt] Jiangxi Normal University HeartFireY}
+\date{September 1202}
+
+
+\begin{document}
+
+\begin{titlepage}
+
+\maketitle
+
+\end{titlepage}
+
+\newpage
+
+\renewcommand\labelitemi{$\bullet$}
+
+{
+\setcounter{tocdepth}{3}
+\tableofcontents
+\newpage
+}
+
+
+
+
+
+
+
+
+\hypertarget{ux56feux8bba}{%
+\section{图论}\label{ux56feux8bba}}
+
+\hypertarget{lca}{%
+\subsection{1.LCA}\label{lca}}
+
+\hypertarget{ux500dux589e}{%
+\subsubsection{倍增}\label{ux500dux589e}}
+
+\begin{minted}[fontsize=\footnotesize,breaklines,linenos]{cpp}
+int n;
+vector<int>to[N];
+int rt;
+int depth[N];
+int fa[N][21];//fa[u][i] 表示 u 开始向上 2^i 的父节点
+void dfs_lca(int u, int father) {
+    depth[u] = depth[father] + 1;
+    fa[u][0] = father;
+    for (int i = 1; (1 << i) <= depth[u]; i++) {
+        fa[u][i] = fa[fa[u][i - 1]][i - 1];
+    }
+    for (auto ed : to[u]) {
+        int v = ed;
+        if (v != father) {
+            dfs_lca(v, u);
+        }
+    }
+}
+int lca(int u,int v) {
+    if (depth[u] < depth[v])swap(u, v);
+    for (int k = 20; k >= 0; k--) {
+        if (depth[fa[u][k]] >= depth[v]) {
+            u = fa[u][k];
+        }
+    }
+    if (u == v) {
+        return u;
+    }
+    for (int k = 20; k >= 0; k--) {
+        if (fa[u][k] != fa[v][k]) {
+            u = fa[u][k];
+            v = fa[v][k];
+        }
+    }
+    return fa[u][0];
+}
+void solve() {
+    cin >> n;
+    for (int i = 1; i <= n; i++) {
+        int u, v;
+        cin >> u >> v;
+        if (v == -1) {
+            rt = u;
+        }
+        to[u].pb(v);
+        to[v].pb(u);
+    }
+    dfs_lca(rt, 0);
+    int q;
+    cin >> q;
+    while (q--) {
+        int u, v;
+        cin >> u >> v;
+        cout << lca(u, v) << "\n";
+    }
+}
+
+\end{minted}
+
+\hypertarget{hld-ux6811ux5256}{%
+\subsubsection{HLD 树剖}\label{hld-ux6811ux5256}}
+
+\begin{minted}[fontsize=\footnotesize,breaklines,linenos]{cpp}
+#include <bits/stdc++.h>
+
+#define maxm 200010
+namespace LCA{
+    struct edge{ int to, len, next; } E[maxm];
+    int cnt, last[maxm], fa[maxm], top[maxm], deep[maxm], siz[maxm], son[maxm], val[maxm];
+    void addedge(int a, int b, int len = 0){
+        E[++cnt] = (edge){b, len, last[a]}, last[a] = cnt;
+    }
+    void dfs1(int x){
+        deep[x] = deep[fa[x]] + 1;
+        siz[x] = 1;
+        for (int i = last[x]; i; i = E[i].next){
+            int to = E[i].to;
+            if (fa[x] != to && !fa[to]){
+                val[to] = E[i].len;
+                fa[to] = x;
+                dfs1(to);
+                siz[x] += siz[to];
+                if (siz[son[x]] < siz[to]) son[x] = to;
+            }
+        }
+    }
+    void dfs2(int x){
+        if (x == son[fa[x]]) top[x] = top[fa[x]];
+        else top[x] = x;
+        for (int i = last[x]; i; i = E[i].next)
+            if (fa[E[i].to] == x) dfs2(E[i].to);
+    }
+    void init(int root) { dfs1(root), dfs2(root); }
+    int query(int x, int y){
+        for (; top[x] != top[y]; deep[top[x]] > deep[top[y]] ? x = fa[top[x]] : y = fa[top[y]]);
+        return deep[x] < deep[y] ? x : y;
+    }
+}
+int n, m, x, y, v;
+int main(){
+    scanf("%d%d", &n, &m);
+    for (int i = 1; i < n; i++){
+        scanf("%d%d", &x, &y);
+        LCA::addedge(x, y, v);
+        LCA::addedge(y, x, v);
+    }
+    LCA::init(1);
+    for (int i = 1; i <= m; i++){
+        scanf("%d%d", &x, &y);
+        printf("%d\n", LCA::query(x, y));
+    }
+    return 0;
+}
+\end{minted}
+
+\hypertarget{kruskalux91cdux6784ux6811}{%
+\subsection{2.Kruskal重构树}\label{kruskalux91cdux6784ux6811}}
+
+\begin{minted}[fontsize=\footnotesize,breaklines,linenos]{cpp}
+const int N = 1e5 + 10;
+int n = 0, m = 0;
+
+namespace Graph
+{
+    struct edge { int to, nxt, val; } edges[N << 1];
+    int cnt, head[N << 1], val[N << 1];
+    void add(int u, int v, int val = 0){
+        edges[++cnt] = (edge){v, head[u], val};
+        head[u] = cnt;
+    }
+} // namespace Graph
+
+namespace KR{
+    using Graph::add;
+    struct edge{ 
+        int u, v, w;
+        const bool operator< (const edge &x) const { return w < x.w; }
+    } edges[N] ;
+    int fa[N];
+    void init(int n){ for(int i = 1; i <= n; i++) fa[i] = i; }
+    int find(int x){ return fa[x] == x ? x : (fa[x] = find(fa[x])); }
+
+    
+    void kruskal(){
+        int tot = 0, cnt = n;
+        sort(edges + 1, edges + 1 + m);
+        for(int i = 1; i <= m; i++){
+            int fau = find(edges[i].u), fav = find(edges[i].v);
+            if(fau != fav){
+                cnt++, fa[fau] = fa[fav] = cnt;
+                add(fau, cnt), add(cnt, fau);
+                add(fav, cnt), add(cnt, fav);
+                Graph::val[cnt] = edges[i].w;
+                tot++;
+            }
+            if(tot == n - 1) break;
+        }
+
+    }
+} // namespace KR
+\end{minted}
+
+\hypertarget{km-ux4e8cux5206ux56feux6700ux5927ux6743ux5339ux914d}{%
+\subsection{3.KM
+二分图最大权匹配}\label{km-ux4e8cux5206ux56feux6700ux5927ux6743ux5339ux914d}}
+
+\begin{minted}[fontsize=\footnotesize,breaklines,linenos]{cpp}
+namespace RMatch{
+    #define LL long long
+    const int M = 400 + 5, INF = 2E9;
+    int n = 0; //! Attention-Outside !//
+    int w[M][M], kx[M], ky[M], linky[M], vy[M], slk[M], pre[M];
+
+    int KM(){
+        for(int i = 1; i <= n; i++)
+            for(int j = 1; j <= n; j++) kx[i] = max(kx[i], w[i][j]);
+        for(int i = 1; i <= n; i++) {
+            fill(vy, vy + n + 1, 0);
+            fill(slk, slk + n + 1, INF);
+            fill(pre, pre + n + 1, 0);
+            int k = 0, p = -1;
+            for(linky[k = 0] = i; linky[k]; k = p){
+                vy[k] = 1;
+                int d = INF, x = linky[k];
+                for(int j = 1; j <= n; j++)
+                    if (!vy[j]) {
+                        int t = kx[x] + ky[j] - w[x][j];
+                        if (t < slk[j]) { slk[j] = t; pre[j] = k; }
+                        if (slk[j] < d) { d = slk[j]; p = j; }
+                    }
+                for(int j = 0; j <= n; j++)
+                    if (vy[j]) { kx[linky[j]] -= d; ky[j] += d; }
+                    else slk[j] -= d;
+            }
+            for(; k; k = pre[k]) linky[k] = linky[pre[k]];
+        }
+        int ans = 0;
+        for(int i = 1; i <= n; i++) ans += kx[i] + ky[i];
+        return ans;
+    }
+
+    inline void add(int x, int y, int val){ w[x][y] = val; }
+}
+\end{minted}
+
+\hypertarget{ux4e8cux5206ux56feux5339ux914d}{%
+\subsection{4.二分图匹配}\label{ux4e8cux5206ux56feux5339ux914d}}
+
+\begin{minted}[fontsize=\footnotesize,breaklines,linenos]{cpp}
+/*
+! + 最小覆盖数 = 最大匹配数
+! + 最大独立集 = 顶点数 - 二分图匹配数
+! + DAG 最小路径覆盖数 = 结点数 - 拆点后二分图最大匹配数
+*/
+
+const int N = 1e3 + 10;
+struct MaxMatch {   
+    int n;
+    vector<int> g[N];
+    int vis[N], left[N], clk;
+
+    void init(int n) {
+        this->n = n;
+        for(int i = 0; i <= n; i++) g[i].clear();
+        memset(left, -1, sizeof left);
+        memset(vis, -1, sizeof vis);
+    }
+
+    bool dfs(int u) {
+        for (int v: g[u])
+            if (vis[v] != clk) {
+                vis[v] = clk;
+                if (left[v] == -1 || dfs(left[v])) {
+                    left[v] = u;
+                    return true;
+                }
+            }
+        return false;
+    }
+
+    int match() {
+        int ret = 0;
+        for (clk = 0; clk <= n; ++clk)
+            if (dfs(clk)) ++ret;
+        return ret;
+    }
+};
+\end{minted}
+
+\hypertarget{ux62d3ux6251ux6392ux5e8f}{%
+\subsection{5.拓扑排序}\label{ux62d3ux6251ux6392ux5e8f}}
+
+\begin{minted}[fontsize=\footnotesize,breaklines,linenos]{cpp}
+const int N = 1e5 + 10;
+std::vector<int> g[N];
+int in_cnt[N];
+
+bool TopoSort(int n){
+    std::vector<int> ans;
+    std::queue<int> q;
+    for(int i = 1; i <= n; i++) if(!in_cnt[i]) q.emplace(i);
+    while(q.size()){
+        int now = q.front(); q.pop();
+        ans.emplace_back(now);
+        for(auto nxt : g[now]) if(!--in_cnt[nxt]) q.emplace(nxt);
+    }
+    if(ans.size() == n){
+        for(auto ansi : ans) cout << ansi << ' ';
+        return true;
+    }
+    else return false;
+}
+
+inline void solve(){
+    int n, m; std::cin >> n >> m;
+    for(int i = 1; i <= m; i++){
+        int u, v; std::cin >> u >> v;
+        g[u].emplace_back(v);
+        in_cnt[v]++;
+    }
+    bool status = TopoSort(n);
+}
+\end{minted}
+
+\hypertarget{ekspfa}{%
+\subsection{6.EK+SPFA}\label{ekspfa}}
+
+\begin{minted}[fontsize=\footnotesize,breaklines,linenos]{cpp}
+#include <bits/stdc++.h>
+using namespace std;
+
+const int N = 5100, M = 20010, INF = 1e8;
+int n, m, s, t;
+template <int N,int M>struct MCMF{
+    //EK+spfa
+    const int INF=1e8;
+    int S,T;
+    MCMF(int s,int t):S(s),T(t){}
+    int h[N], e[M], f[M], w[M], ne[M], idx;
+    int q[N], d[N], pre[N], incf[N];
+    bool st[N];
+
+    void add(int a, int b, int c, int d)
+    {
+        e[idx] = b, f[idx] = c, w[idx] = d, ne[idx] = h[a], h[a] = idx ++ ;
+        e[idx] = a, f[idx] = 0, w[idx] = -d, ne[idx] = h[b], h[b] = idx ++ ;
+    }
+
+    bool spfa()
+    {
+        int hh = 0, tt = 1;
+        memset(d, 0x3f, sizeof d);
+        memset(incf, 0, sizeof incf);
+        q[0] = S, d[S] = 0, incf[S] = INF;
+        while (hh != tt)
+        {
+            int t = q[hh ++ ];
+            if (hh == N) hh = 0;
+            st[t] = false;
+
+            for (int i = h[t]; ~i; i = ne[i])
+            {
+                int ver = e[i];
+                if (f[i] && d[ver] > d[t] + w[i])
+                {
+                    d[ver] = d[t] + w[i];
+                    pre[ver] = i;
+                    incf[ver] = min(f[i], incf[t]);
+                    if (!st[ver])
+                    {
+                        q[tt ++ ] = ver;
+                        if (tt == N) tt = 0;
+                        st[ver] = true;
+                    }
+                }
+            }
+        }
+
+        return incf[T] > 0;
+    }
+
+    void EK(int& flow, int& cost)
+    {
+        flow = cost = 0;
+        while (spfa())
+        {
+            int t = incf[T];
+            flow += t, cost += t * d[T];
+            for (int i = T; i != S; i = e[pre[i] ^ 1])
+            {
+                f[pre[i]] -= t;
+                f[pre[i] ^ 1] += t;
+            }
+        }
+    }
+};
+signed main()
+{
+    int x;
+    cin>>n;
+    s=0,t=n+n+1;
+    MCMF<N,M>mcmf1(s,t);
+    MCMF<N,M>mcmf2(s,t);
+
+    memset(mcmf1.h, -1, sizeof mcmf1.h);
+    for(int i=1;i<=n;i++){
+        for(int j=1;j<=n;j++){
+            cin>>x;
+            mcmf1.add(i,j+n,1,x);
+            mcmf2.add(i,j+n,1,-x);
+        }
+        mcmf1.add(0,i,1,0);
+        mcmf1.add(i+n,n+n+1,1,0);
+        mcmf2.add(0,i,1,0);
+        mcmf2.add(i+n,n+n+1,1,0);
+    }
+
+    int flow, cost,flow2,cost2;
+    mcmf1.EK(flow, cost);
+    //mcmf2.EK(flow2, cost2);
+    printf("%d %d\n",cost,-cost2);
+
+    return 0;
+}
+\end{minted}
+
+\hypertarget{dinic}{%
+\subsection{7.Dinic}\label{dinic}}
+
+\begin{minted}[fontsize=\footnotesize,breaklines,linenos]{cpp}
+#include <bits/stdc++.h>
+using namespace std;
+template <int N> struct Dinic {
+    const int INF = 1e9;
+    struct E {
+        int to, cap, rev;
+    };
+    vector<E> G[N];
+    int lev[N], cur[N];
+    inline void add(int x, int y, int c) {
+        G[x].push_back({ y, c, (int)G[y].size() });
+        G[y].push_back({ x, 0, (int)G[x].size() - 1 });
+    }
+    void bfs(int s) {
+        queue<int> q;
+        memset(lev, -1, sizeof lev);
+
+        for (lev[s] = 0, q.push(s); q.size();) {
+            int x = q.front();
+            q.pop();
+
+            for (auto &e : G[x])
+                if (e.cap > 0 && lev[e.to] < 0)
+                    lev[e.to] = lev[x] + 1, q.push(e.to);
+        }
+    }
+    int dfs(int x, int t, int f) {
+        if (x == t)
+            return f;
+
+        for (int &i = cur[x], sz = G[x].size(), d; i < sz; i++) {
+            auto &e = G[x][i];
+
+            if (e.cap > 0 && lev[x] < lev[e.to]) {
+                if ((d = dfs(e.to, t, min(f, e.cap))) > 0) {
+                    e.cap -= d, G[e.to][e.rev].cap += d;
+                    return d;
+                }
+            }
+        }
+
+        return 0;
+    }
+    int64_t maxflow(int s, int t) {
+        for (int64_t flow = 0, f;;) {
+            bfs(s);
+
+            if (lev[t] < 0)
+                return flow;
+
+            memset(cur, 0, sizeof cur);
+
+            while ((f = dfs(s, t, INF)) > 0)
+                flow += f;
+        }
+    }
+};
+Dinic<1005> din;
+signed main() {
+    cin.tie(0)->sync_with_stdio(0);
+    int n, m, s, t;
+    cin >> n ;
+    for(int i=1;i<=n;i++){
+        for(int j=1;j<=n;j++){
+            int x;
+            cin>>x;
+            din.add(0,i,x);
+            din.add(j+100,201,x);
+            din.add(i,j+100,1e9);
+        }
+    }
+    return cout << din.maxflow(0, 201), 0;
+}
+\end{minted}
+
+\hypertarget{mcmfdijek}{%
+\subsection{8.MCMF（dij+ek）}\label{mcmfdijek}}
+
+\begin{minted}[fontsize=\footnotesize,breaklines,linenos]{cpp}
+#include <bits/stdc++.h>
+using namespace std;
+const int mod = 1000000007,N = 100005,inf = 1e9;
+template <int N> struct MCMF{
+    struct E{
+        int to,cap,val,inv;
+    };
+    vector <E> g[N];
+    int dis[N],now[N],h[N],pre[N],preu[N];
+    void add(int u,int v,int f,int w){
+        g[u].push_back({v,f,w,(int)g[v].size()});
+        g[v].push_back({u,0,-w,(int)g[u].size()-1});
+    }
+    void dijkstra(int st){
+        priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pair<int,int>>>q;
+        memset(dis,0x3f,sizeof dis);
+        memset(pre,-1,sizeof pre);
+        memset(preu,-1,sizeof preu);
+        dis[st]=0;q.push({0,st});
+        while(q.size()){
+            auto [d,u]=q.top();q.pop();
+            if(dis[u]<d)continue;
+            int x=0;
+            for(auto [v,f,w,inv]:g[u]){
+                if(f&&dis[v]>dis[u]+w+h[u]-h[v]){
+                    dis[v]=dis[u]+h[u]-h[v]+w;
+                    pre[v]=x;
+                    preu[v]=u;
+                    q.push({dis[v],v});
+                }
+                x++;
+            }
+        }
+    }
+    pair<int,int> min_cost_max_flow(int st,int ed){
+        memset(h,0,sizeof h);
+        for(int flow=0,cost=0,res=inf;;res=inf){
+            
+            dijkstra(st);
+            if(dis[ed]>inf)return {flow,cost};
+            for(int i=0;i<N;i++){
+                h[i]+=dis[i];
+            }
+            for(int i=ed;i!=st;i=preu[i]){
+                res=min(res,g[preu[i]][pre[i]].cap);
+            }
+            flow+=res;
+            cost+=res*h[ed];
+            for(int i=ed;i!=st;i=preu[i]){
+                g[i][g[preu[i]][pre[i]].inv].cap+=res;
+                g[preu[i]][pre[i]].cap-=res;
+            }
+        }
+    }
+};
+MCMF<505>mcmf;
+int n,m,s,t;
+signed main(){
+    cin>>n>>m>>s>>t;
+    for(int i=1;i<=m;i++){
+        int u,v,w,c;cin>>u>>v>>w>>c;
+        mcmf.add(u,v,w,c);
+    }
+    auto [f,c]=mcmf.min_cost_max_flow(s,t);
+    cout<<f<<" "<<c<<endl;
+}
+\end{minted}
+
+\hypertarget{scc_tarjanux6709ux5411ux56feux5f3aux8fdeux901aux5206ux91cf}{%
+\subsection{9.Scc\_Tarjan(有向图强连通分量)}\label{scc_tarjanux6709ux5411ux56feux5f3aux8fdeux901aux5206ux91cf}}
+
+\begin{minted}[fontsize=\footnotesize,breaklines,linenos]{cpp}
+#include <bits/stdc++.h>
+using namespace std;
+int n,m;
+int newid[200005];
+vector<int>p[200005];
+vector<vector<int>>scc;
+int dfn[200005],low[200005],ins[200005],idx,cnt;
+vector<int>st,f;
+void scc_tarjan(int u){
+    low[u]=dfn[u]=++idx;
+    st.push_back(u);
+    ins[u]=1;
+    for(auto v:p[u]){
+        if(!dfn[v])scc_tarjan(v);
+        if(ins[v])low[u]=min(low[u],low[v]);
+    }
+    if(low[u]==dfn[u]){
+        ++cnt;
+        f.clear();
+        while(1){
+            int v=st.back();st.pop_back();
+            f.push_back(v);
+            ins[v]=0;
+            newid[v]=cnt;
+            if(u==v)break;
+        }
+        scc.push_back(f);
+    }
+}
+
+signed main(){
+    cin>>n>>m;
+    for(int i=1;i<=m;i++){
+        int u,v;cin>>u>>v;
+        p[u].push_back(v);
+    }
+    for(int i=1;i<=n;i++){
+        if(dfn[i])continue;
+        scc_tarjan(i);
+    }
+}
+\end{minted}
+
+\hypertarget{edcc_tarjanux8fb9ux53ccux8fdeux901aux5206ux91cf}{%
+\subsection{10.Edcc\_Tarjan（边双连通分量）}\label{edcc_tarjanux8fb9ux53ccux8fdeux901aux5206ux91cf}}
+
+\begin{minted}[fontsize=\footnotesize,breaklines,linenos]{cpp}
+#include <bits/stdc++.h>
+using namespace std;
+int n,m;
+int newid[500005],cnt;
+vector<int>g[200005];
+vector<vector<int>>Edcc;
+//下部分为不同题目所需变量
+vector<int>ans;
+
+//下为原图+跑tarjan所需变量
+vector<pair<int,int>>p[500005];
+int dfn[500005],low[500005],idx;
+vector<int>st,f;
+void Edcc_tarjan(int u,int id){
+    low[u]=dfn[u]=++idx;
+    st.push_back(u);
+    for(auto [v,x]:p[u]){
+        if(!dfn[v])Edcc_tarjan(v,x);
+        if(id!=x)low[u]=min(low[u],low[v]);
+    }
+    if(id!=0&&low[u]==dfn[u]){
+        f.push_back(id);
+    }
+    if(low[u]==dfn[u]){
+        ++cnt;
+        f.clear();
+        while(1){
+            int v=st.back();st.pop_back();
+            f.push_back(v);
+            newid[v]=cnt;
+            if(u==v)break;
+        }
+        Edcc.push_back(f);
+    }
+}
+signed main(){
+    cin>>n>>m;
+    for(int i=1;i<=m;i++){
+        int u,v;cin>>u>>v;
+        p[u].push_back({v,i});
+        p[v].push_back({u,i});
+    }
+    for(int i=1;i<=n;i++){
+        if(dfn[i])continue;
+        Edcc_tarjan(i,0);
+    }
+    cout<<Edcc.size()<<endl;
+    for(auto &x:Edcc){
+        cout<<x.size()<<" ";
+        for(auto &y:x){
+            cout<<y<<" ";
+        }
+        cout<<endl;
+    }
+}
+\end{minted}
+
+\hypertarget{vdcc_tarjan}{%
+\subsection{11.Vdcc\_Tarjan}\label{vdcc_tarjan}}
+
+\begin{minted}[fontsize=\footnotesize,breaklines,linenos]{cpp}
+#include <bits/stdc++.h>
+using namespace std;
+int n,m;
+int newid[500005],cnt,cut[500005];
+vector<int>g[200005];
+vector<vector<int>>Vdcc;
+//下部分为不同题目所需变量
+vector<int>ans;
+//下为原图+跑tarjan所需变量
+vector<int>p[500005];
+int dfn[500005],low[500005],idx;
+vector<int>st,f;
+
+void Vdcc_tarjan(int u,int fa){
+    low[u]=dfn[u]=++idx;
+    st.push_back(u);
+    int tot=0;
+    for(auto v:p[u]){
+        if(v==fa)continue;
+        if(!dfn[v]){
+            Vdcc_tarjan(v,u);tot++;
+            low[u]=min(low[v],low[u]);
+            if(low[v]>=dfn[u]){
+                f.clear();
+                f.push_back(u);
+                while(1){
+                    int x=st.back();st.pop_back();
+                    f.push_back(x);
+                    if(x==v)break;
+                }
+                Vdcc.push_back(f);
+            }
+        }
+        low[u]=min(low[u],dfn[v]);
+    }
+    if(fa==0&&tot==0){
+        f.clear();f.push_back(u);Vdcc.push_back(f);
+    }
+}
+signed main(){
+    cin>>n>>m;
+    for(int i=1;i<=m;i++){
+        int u,v;cin>>u>>v;
+        if(u==v)continue;
+        p[u].push_back(v);
+        p[v].push_back(u);
+    }
+    for(int i=1;i<=n;i++){
+        if(dfn[i])continue;
+        Vdcc_tarjan(i,0);
+    }
+    cout<<Vdcc.size()<<endl;
+    for(auto &x:Vdcc){
+        cout<<x.size()<<" ";
+        for(auto &y:x){
+            cout<<y<<" ";
+        }
+        cout<<endl;
+    }
+}
+\end{minted}
+
+\end{document}
