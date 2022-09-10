@@ -158,11 +158,49 @@ jobs:
 
       - name: Copy build pdf to PDF dir
         run: |
-          mv part1.pdf ./PDFDocument/
-          mv part2.pdf ./PDFDocument/
-          mv part3.pdf ./PDFDocument/
-          mv part4.pdf ./PDFDocument/
-          mv part5.pdf ./PDFDocument/
+          rm ./PDFDocument/*
+          mv part1.pdf ./PDFDocument/part1.pdf
+          mv part2.pdf ./PDFDocument/part2.pdf
+          mv part3.pdf ./PDFDocument/part3.pdf
+          mv part4.pdf ./PDFDocument/part4.pdf
+          mv part5.pdf ./PDFDocument/part5.pdf
+
+      - name: Build Cover
+        uses: xu-cheng/latex-action@v2
+        with:
+          root_file: |
+            ./TexDocument/Cover/cover1.tex
+            ./TexDocument/Cover/cover2.tex
+            ./TexDocument/Cover/cover3.tex
+            ./TexDocument/Cover/cover4.tex
+            ./TexDocument/Cover/cover5.tex
+          latexmk_use_xelatex: true
+          latexmk_shell_escape: true
+          extra_fonts: ./pandoc/font/*.otf
+      
+      - name: Move built cover to PDF dir
+        run: |
+          mv cover1.pdf ./PDFDocument/
+          mv cover2.pdf ./PDFDocument/
+          mv cover3.pdf ./PDFDocument/
+          mv cover4.pdf ./PDFDocument/
+          mv cover5.pdf ./PDFDocument/
+
+      - name: Merge PDF
+        run: |
+          sudo snap install pdftk
+          cd ./PDFDocument/
+          pdftk A=cover1.pdf B=part1.pdf cat A B output part1-Math.pdf
+          pdftk A=cover2.pdf B=part2.pdf cat A B output part2-DataStructure.pdf
+          pdftk A=cover3.pdf B=part3.pdf cat A B output part3-String.pdf
+          pdftk A=cover4.pdf B=part4.pdf cat A B output part4-Geometry.pdf
+          pdftk A=cover5.pdf B=part5.pdf cat A B output part5-GraphTheory.pdf
+          rm cover1.pdf part1.pdf
+          rm cover2.pdf part2.pdf
+          rm cover3.pdf part3.pdf
+          rm cover4.pdf part4.pdf
+          rm cover5.pdf part5.pdf
+          cd $HOME
 
       - name: Commit Changes
         run: |
@@ -173,7 +211,7 @@ jobs:
           git commit -m "Generated Automatically by Workflow." -a
           git config --global --add safe.directory '*'
       
-      - name: Push PDF
+      - name: Push Changes
         uses: ad-m/github-push-action@master
         with: 
           branch: master
