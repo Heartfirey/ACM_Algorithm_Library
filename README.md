@@ -1,4 +1,17 @@
+<img src="./TexDocument/Cover/ICPC.png" style="zoom:10%;" />
 <center><img src="http://readme-typing-svg.herokuapp.com?font=Fira+Code&pause=1000&color=521DF7&center=true&multiline=true&width=1000&height=80&lines=ACM+Template+Library+;Powered+by+HeartFireY%2C+eroengine%2C+yezzz" align="middle" /></center>
+
+> ❓What's this?
+>
+> 这里是Jiangxi Normal University ACM竞赛队(HeartFireY、eroengine、yezzz)队伍使用的竞赛模板库~有任何问题欢迎发起Issue！
+>
+> ❓How to Use?
+>
+> 我们已经编写了Github Actions，该Action由Push操作触发，其Workflow将使用Pandoc自动将根目录下的五个Markdown文档编译为LaTex文档，并使用XeLaTex自动编译为PDF，与对应封面进行合成后生成至项目根目录下的PDFDocument目录下。
+>
+> 因此，你只需要修改根目录下的五个Markdown文档，并发起Push触发Action即可。在接下来的一小段时间内，Github将自动生成PDF。
+>
+> ⚠ 除开发外，请勿修改其他文件。请在发起提交前确保本地仓库处于最新状态。
 
 ## Part.1 Math
 
