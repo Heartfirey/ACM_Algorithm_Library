@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Build Latex Document Files
+name: Build PDF
 
 # Controls when the workflow will run
 on:
@@ -140,6 +140,22 @@ jobs:
       #     latexmk_shell_escape: true
       #     extra_fonts: |
       #       ./pandoc/font/*.otf
+      - name: Create PDF Build DIR
+        run: mkdir -p $HOME/work/ACM_Algorithm_Library/ACM_Algorithm_Library/PDFDocument/
+    
+      - name: Compile LaTeX document
+        uses: xu-cheng/latex-action@v2
+        with:
+          working_directory: $HOME/work/ACM_Algorithm_Library/ACM_Algorithm_Library/PDFDocument/
+          root_file: |
+            ./TexDocument/part1.tex
+            ./TexDocument/part2.tex
+            ./TexDocument/part3.tex
+            ./TexDocument/part4.tex
+            ./TexDocument/part5.tex
+          latexmk_use_xelatex: true
+          latexmk_shell_escape: true
+          extra_fonts: ./pandoc/font/*.otf
 
       - name: Commit Changes
         run: |
