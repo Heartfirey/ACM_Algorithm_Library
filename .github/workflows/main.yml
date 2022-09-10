@@ -154,7 +154,7 @@ jobs:
             ./TexDocument/part5.tex
           latexmk_use_xelatex: true
           latexmk_shell_escape: true
-          extra_fonts: $HOME/work/ACM_Algorithm_Library/ACM_Algorithm_Library/font/*.otf
+          extra_fonts: ./pandoc/font/*.otf
 
       - name: Copy build pdf to PDF dir
         run: |
