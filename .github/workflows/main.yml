@@ -146,7 +146,6 @@ jobs:
       - name: Compile LaTeX document
         uses: xu-cheng/latex-action@v2
         with:
-          working_directory: $HOME/work/ACM_Algorithm_Library/ACM_Algorithm_Library/PDFDocument/
           root_file: |
             ./TexDocument/part1.tex
             ./TexDocument/part2.tex
@@ -157,11 +156,20 @@ jobs:
           latexmk_shell_escape: true
           extra_fonts: $HOME/work/ACM_Algorithm_Library/ACM_Algorithm_Library/font/*.otf
 
+      - name: Copy build pdf to PDF dir
+        run: |
+          mv part1.pdf ./PDFDocument/
+          mv part2.pdf ./PDFDocument/
+          mv part3.pdf ./PDFDocument/
+          mv part4.pdf ./PDFDocument/
+          mv part5.pdf ./PDFDocument/
+
       - name: Commit Changes
         run: |
           git config --global user.email "yanweiqi1754989931@live.com"
           git config --global user.name "HeartFireY"
           git add $HOME/work/ACM_Algorithm_Library/ACM_Algorithm_Library/TexDocument/*.tex
+          git add $HOME/work/ACM_Algorithm_Library/ACM_Algorithm_Library/PDFDocument/*.pdf
           git commit -m "Generated Automatically by Workflow." -a
           git config --global --add safe.directory '*'
       
