@@ -73,27 +73,6 @@ jobs:
           mkdir -p /home/runner/.pandoc/templates/
           cp ./pandoc/algo.latex /home/runner/.pandoc/date/templates/
           cp ./pandoc/algo.latex /home/runner/.pandoc/templates/
-
-      # - name: Install font to system
-      #   run: |
-      #     sudo apt-get install ttf-mscorefonts-installer
-      #     cp ./pandoc/font/* /usr/share/fonts/
-      #     fc-cache -f
-      #     mkfontscale
-      #     mkfontdir
-      #     fc-list
-
-      # - name: Build Full version
-      #   run: |
-      #     pandoc --template algo --filter ./pandoc/minted.py --pdf-engine=xelatex --no-highlight --pdf-engine-opt="-shell-escape" -o template.tex --from markdown -V mainfont="Source Han Serif CN" -V monofont="Source Code Pro" -V sansfont="Source Han Sans CN" -V CJKmainfont="Source Han Serif CN" -V secnumdepth=2 -V --number-sections --toc -V include-before="\renewcommand\labelitemi{$\bullet$}" -V header-includes="\usepackage{minted}" -V geometry="margin=2cm" *-*.md
-
-
-      # - name: Compile LaTeX document
-      #   uses: xu-cheng/latex-action@v2
-      #   with:
-      #     root_file: template.tex
-      #     latexmk_use_xelatex: true
-      #     latexmk_shell_escape: true
       
       - name: Build Full version
         run: |
@@ -132,14 +111,6 @@ jobs:
           cd $HOME/
           ls
       
-      # - name: Compile LaTeX document
-      #   uses: xu-cheng/latex-action@v2
-      #   with:
-      #     root_file: template.tex
-      #     latexmk_use_xelatex: true
-      #     latexmk_shell_escape: true
-      #     extra_fonts: |
-      #       ./pandoc/font/*.otf
       - name: Create PDF Build DIR
         run: mkdir -p $HOME/work/ACM_Algorithm_Library/ACM_Algorithm_Library/PDFDocument/
     
@@ -156,7 +127,7 @@ jobs:
           latexmk_shell_escape: true
           extra_fonts: ./pandoc/font/*.otf
 
-      - name: Copy build pdf to PDF dir
+      - name: Move built pdf to PDF dir
         run: |
           rm ./PDFDocument/*
           mv part1.pdf ./PDFDocument/part1.pdf
@@ -219,9 +190,3 @@ jobs:
           force: false
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
-      # - name: Push changes
-      #   uses: ad-m/github-push-action@master
-      #   with:
-      #     github_token: ${{ secrets.GITHUB_TOKEN }}
-
-      # Runs a set of commands using the runners shell
