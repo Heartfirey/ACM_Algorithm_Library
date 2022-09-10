@@ -143,14 +143,14 @@ jobs:
 
       - name: Commit Changes
         run: |
-          git config --global user.email yanweiqi1754989931@live.com
-          git config --global user.name HeartFireY
+          git config --global user.email "yanweiqi1754989931@live.com"
+          git config --global user.name "HeartFireY"
           git add $HOME/work/ACM_Algorithm_Library/ACM_Algorithm_Library/TexDocument/*.tex
           git commit -m "Generated Automatically by Workflow." -a
           git config --global --add safe.directory '*'
       
       - name: Push PDF
-        uses: ad-m/github-push-action@v0.5.0
+        uses: ad-m/github-push-action@master
         with: 
           branch: master
           force: false
