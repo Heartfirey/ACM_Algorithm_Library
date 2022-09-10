@@ -189,7 +189,7 @@ jobs:
 
       - name: Merge PDF
         run: |
-          sudo apt-get install pdfunite
+          sudo apt-get install poppler-utils
           cd ./PDFDocument/
           sudo pdfunite cover1.pdf part1.pdf part1-Math.pdf
           sudo pdfunite cover2.pdf part2.pdf part2-DataStructure.pdf
