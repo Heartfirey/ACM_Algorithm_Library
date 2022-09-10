@@ -191,11 +191,11 @@ jobs:
         run: |
           sudo snap install pdftk
           cd ./PDFDocument/
-          pdftk A=cover1.pdf B=part1.pdf cat A B output part1-Math.pdf
-          pdftk A=cover2.pdf B=part2.pdf cat A B output part2-DataStructure.pdf
-          pdftk A=cover3.pdf B=part3.pdf cat A B output part3-String.pdf
-          pdftk A=cover4.pdf B=part4.pdf cat A B output part4-Geometry.pdf
-          pdftk A=cover5.pdf B=part5.pdf cat A B output part5-GraphTheory.pdf
+          sudo pdftk A=cover1.pdf B=part1.pdf cat A B output part1-Math.pdf
+          sudo pdftk A=cover2.pdf B=part2.pdf cat A B output part2-DataStructure.pdf
+          sudo pdftk A=cover3.pdf B=part3.pdf cat A B output part3-String.pdf
+          sudo pdftk A=cover4.pdf B=part4.pdf cat A B output part4-Geometry.pdf
+          sudo pdftk A=cover5.pdf B=part5.pdf cat A B output part5-GraphTheory.pdf
           rm cover1.pdf part1.pdf
           rm cover2.pdf part2.pdf
           rm cover3.pdf part3.pdf
