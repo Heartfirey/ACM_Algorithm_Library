@@ -189,13 +189,13 @@ jobs:
 
       - name: Merge PDF
         run: |
-          sudo snap install pdftk
+          sudo apt-get install pdfunite
           cd ./PDFDocument/
-          sudo pdftk A=cover1.pdf B=part1.pdf cat A B output part1-Math.pdf
-          sudo pdftk A=cover2.pdf B=part2.pdf cat A B output part2-DataStructure.pdf
-          sudo pdftk A=cover3.pdf B=part3.pdf cat A B output part3-String.pdf
-          sudo pdftk A=cover4.pdf B=part4.pdf cat A B output part4-Geometry.pdf
-          sudo pdftk A=cover5.pdf B=part5.pdf cat A B output part5-GraphTheory.pdf
+          sudo pdfunite cover1.pdf part1.pdf part1-Math.pdf
+          sudo pdfunite cover2.pdf part2.pdf part2-DataStructure.pdf
+          sudo pdfunite cover3.pdf part3.pdf part3-String.pdf
+          sudo pdfunite cover4.pdf part4.pdf part4-Geometry.pdf
+          sudo pdfunite cover5.pdf part5.pdf part5-GraphTheory.pdf
           rm cover1.pdf part1.pdf
           rm cover2.pdf part2.pdf
           rm cover3.pdf part3.pdf
