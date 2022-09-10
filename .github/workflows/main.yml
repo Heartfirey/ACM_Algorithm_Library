@@ -164,6 +164,7 @@ jobs:
           mv part3.pdf ./PDFDocument/part3.pdf
           mv part4.pdf ./PDFDocument/part4.pdf
           mv part5.pdf ./PDFDocument/part5.pdf
+          cp ./TexDocument/Cover/ICPC.png ./
 
       - name: Build Cover
         uses: xu-cheng/latex-action@v2
