@@ -27,28 +27,138 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
 
-      - name: Pandoc Document Converter
-        uses: maxheld83/pandoc-action@v2
-
       # Runs a single command using the runners shell
       - name: Create Temp Files
         run: |
           echo JXNU Asscoiation of Computer Science
-          mkdir $HOME/build/1
-          mkdir $HOME/build/2
-          mkdir $HOME/build/3
-          mkdir $HOME/build/4
-          mkdir $HOME/build/5
-          mv 1-数学.md $HOME/build/1/
-          mv 2-数据结构.md $HOME/build/2/
-          mv 3-字符串.md $HOME/build/3/
-          mv 4-计算几何.md $HOME/build/4/
-          mv 5-图论.md $HOME/build/5/
-          
+          pwd
+          mkdir $HOME/build/
+          mkdir $HOME/build/1/
+          mkdir $HOME/build/2/
+          mkdir $HOME/build/3/
+          mkdir $HOME/build/4/
+          mkdir $HOME/build/5/
+          cp 1-数学.md $HOME/build/1/
+          cp 2-数据结构.md $HOME/build/2/
+          cp 3-字符串.md $HOME/build/3/
+          cp 4-计算几何.md $HOME/build/4/
+          cp 5-图论.md $HOME/build/5/
+          mkdir -p $HOME/build/1/pandoc/
+          mkdir -p $HOME/build/2/pandoc/
+          mkdir -p $HOME/build/3/pandoc/
+          mkdir -p $HOME/build/4/pandoc/
+          mkdir -p $HOME/build/5/pandoc/
+          cp ./pandoc/gen.sh -p $HOME/build/1/pandoc/
+          cp ./pandoc/gen.sh -p $HOME/build/2/pandoc/
+          cp ./pandoc/gen.sh -p $HOME/build/3/pandoc/
+          cp ./pandoc/gen.sh -p $HOME/build/4/pandoc/
+          cp ./pandoc/gen.sh -p $HOME/build/5/pandoc/
+          cp ./pandoc/minted.py -p $HOME/build/1/pandoc/
+          cp ./pandoc/minted.py -p $HOME/build/2/pandoc/
+          cp ./pandoc/minted.py -p $HOME/build/3/pandoc/
+          cp ./pandoc/minted.py -p $HOME/build/4/pandoc/
+          cp ./pandoc/minted.py -p $HOME/build/5/pandoc/
 
+
+      - name: Install dependencies
+        run: |
+          wget https://github.com/jgm/pandoc/releases/download/2.10.1/pandoc-2.10.1-1-amd64.deb
+          sudo dpkg -i pandoc-2.10.1-1-amd64.deb
+          pandoc --version
+          pip install pandocfilters
+
+      - name: Copy Algo.latex to Template Dir
+        run: |
+          mkdir -p /home/runner/.pandoc/date/templates/
+          mkdir -p /home/runner/.pandoc/templates/
+          cp ./pandoc/algo.latex /home/runner/.pandoc/date/templates/
+          cp ./pandoc/algo.latex /home/runner/.pandoc/templates/
+
+      # - name: Install font to system
+      #   run: |
+      #     sudo apt-get install ttf-mscorefonts-installer
+      #     cp ./pandoc/font/* /usr/share/fonts/
+      #     fc-cache -f
+      #     mkfontscale
+      #     mkfontdir
+      #     fc-list
+
+      # - name: Build Full version
+      #   run: |
+      #     pandoc --template algo --filter ./pandoc/minted.py --pdf-engine=xelatex --no-highlight --pdf-engine-opt="-shell-escape" -o template.tex --from markdown -V mainfont="Source Han Serif CN" -V monofont="Source Code Pro" -V sansfont="Source Han Sans CN" -V CJKmainfont="Source Han Serif CN" -V secnumdepth=2 -V --number-sections --toc -V include-before="\renewcommand\labelitemi{$\bullet$}" -V header-includes="\usepackage{minted}" -V geometry="margin=2cm" *-*.md
+
+
+      # - name: Compile LaTeX document
+      #   uses: xu-cheng/latex-action@v2
+      #   with:
+      #     root_file: template.tex
+      #     latexmk_use_xelatex: true
+      #     latexmk_shell_escape: true
+      
+      - name: Build Full version
+        run: |
+          mkdir -p $HOME/work/ACM_Algorithm_Library/ACM_Algorithm_Library/TexDocument/
+          cd $HOME/build/1/
+          mkdir complie
+          pandoc --template algo --filter ./pandoc/minted.py --pdf-engine=xelatex --no-highlight --pdf-engine-opt="-shell-escape" -o template.tex --from markdown -V mainfont="Source Han Serif CN" -V monofont="Source Code Pro" -V sansfont="Source Han Sans CN" -V CJKmainfont="Source Han Serif CN" -V secnumdepth=2 -V --number-sections --toc -V include-before="\renewcommand\labelitemi{$\bullet$}" -V header-includes="\usepackage{minted}" -V geometry="margin=2cm" *-*.md
+
+          pwd
+          cd $HOME/build/2/
+          mkdir complie
+          pandoc --template algo --filter ./pandoc/minted.py --pdf-engine=xelatex --no-highlight --pdf-engine-opt="-shell-escape" -o template.tex --from markdown -V mainfont="Source Han Serif CN" -V monofont="Source Code Pro" -V sansfont="Source Han Sans CN" -V CJKmainfont="Source Han Serif CN" -V secnumdepth=2 -V --number-sections --toc -V include-before="\renewcommand\labelitemi{$\bullet$}" -V header-includes="\usepackage{minted}" -V geometry="margin=2cm" *-*.md
+
+          pwd
+          cd $HOME/build/3/
+          mkdir complie
+          pandoc --template algo --filter ./pandoc/minted.py --pdf-engine=xelatex --no-highlight --pdf-engine-opt="-shell-escape" -o template.tex --from markdown -V mainfont="Source Han Serif CN" -V monofont="Source Code Pro" -V sansfont="Source Han Sans CN" -V CJKmainfont="Source Han Serif CN" -V secnumdepth=2 -V --number-sections --toc -V include-before="\renewcommand\labelitemi{$\bullet$}" -V header-includes="\usepackage{minted}" -V geometry="margin=2cm" *-*.md
+
+          pwd
+          cd $HOME/build/4/
+          mkdir complie
+          pandoc --template algo --filter ./pandoc/minted.py --pdf-engine=xelatex --no-highlight --pdf-engine-opt="-shell-escape" -o template.tex --from markdown -V mainfont="Source Han Serif CN" -V monofont="Source Code Pro" -V sansfont="Source Han Sans CN" -V CJKmainfont="Source Han Serif CN" -V secnumdepth=2 -V --number-sections --toc -V include-before="\renewcommand\labelitemi{$\bullet$}" -V header-includes="\usepackage{minted}" -V geometry="margin=2cm" *-*.md
+
+          pwd
+          cd $HOME/build/5/
+          mkdir complie
+          pandoc --template algo --filter ./pandoc/minted.py --pdf-engine=xelatex --no-highlight --pdf-engine-opt="-shell-escape" -o template.tex --from markdown -V mainfont="Source Han Serif CN" -V monofont="Source Code Pro" -V sansfont="Source Han Sans CN" -V CJKmainfont="Source Han Serif CN" -V secnumdepth=2 -V --number-sections --toc -V include-before="\renewcommand\labelitemi{$\bullet$}" -V header-includes="\usepackage{minted}" -V geometry="margin=2cm" *-*.md
+
+          pwd
+
+          cp $HOME/build/1/template.tex $HOME/work/ACM_Algorithm_Library/ACM_Algorithm_Library/TexDocument/part1.tex
+          cp $HOME/build/2/template.tex $HOME/work/ACM_Algorithm_Library/ACM_Algorithm_Library/TexDocument/part2.tex
+          cp $HOME/build/3/template.tex $HOME/work/ACM_Algorithm_Library/ACM_Algorithm_Library/TexDocument/part3.tex
+          cp $HOME/build/4/template.tex $HOME/work/ACM_Algorithm_Library/ACM_Algorithm_Library/TexDocument/part4.tex
+          cp $HOME/build/5/template.tex $HOME/work/ACM_Algorithm_Library/ACM_Algorithm_Library/TexDocument/part5.tex
+          cd $HOME/
+          ls
+      
+      # - name: Compile LaTeX document
+      #   uses: xu-cheng/latex-action@v2
+      #   with:
+      #     root_file: template.tex
+      #     latexmk_use_xelatex: true
+      #     latexmk_shell_escape: true
+      #     extra_fonts: |
+      #       ./pandoc/font/*.otf
+
+      - name: Commit Changes
+        run: |
+          git config --global user.email yanweiqi1754989931@live.com
+          git config --global user.name HeartFireY
+          git add $HOME/work/ACM_Algorithm_Library/ACM_Algorithm_Library/TexDocument/*.tex
+          git commit -m "Generated Automatically by Workflow." -a
+          git config --global --add safe.directory '*'
+      
+      - name: Push PDF
+        uses: ad-m/github-push-action@v0.5.0
+        with: 
+          branch: master
+          force: false
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      # - name: Push changes
+      #   uses: ad-m/github-push-action@master
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
 
       # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
