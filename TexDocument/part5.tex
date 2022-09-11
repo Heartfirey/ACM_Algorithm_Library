@@ -284,41 +284,65 @@ namespace KR{
 二分图最大权匹配}\label{km-ux4e8cux5206ux56feux6700ux5927ux6743ux5339ux914d}}
 
 \begin{minted}[fontsize=\footnotesize,breaklines,linenos]{cpp}
-namespace RMatch{
-    #define LL long long
-    const int M = 400 + 5, INF = 2E9;
-    int n = 0; //! Attention-Outside !//
-    int w[M][M], kx[M], ky[M], linky[M], vy[M], slk[M], pre[M];
+/*好难懂啊，还是抄板子吧*/
+typedef long long ll;
+typedef unsigned long long ull;//卡精度
+typedef pair<int,int> PII;
 
-    int KM(){
-        for(int i = 1; i <= n; i++)
-            for(int j = 1; j <= n; j++) kx[i] = max(kx[i], w[i][j]);
-        for(int i = 1; i <= n; i++) {
-            fill(vy, vy + n + 1, 0);
-            fill(slk, slk + n + 1, INF);
-            fill(pre, pre + n + 1, 0);
-            int k = 0, p = -1;
-            for(linky[k = 0] = i; linky[k]; k = p){
-                vy[k] = 1;
-                int d = INF, x = linky[k];
-                for(int j = 1; j <= n; j++)
-                    if (!vy[j]) {
-                        int t = kx[x] + ky[j] - w[x][j];
-                        if (t < slk[j]) { slk[j] = t; pre[j] = k; }
-                        if (slk[j] < d) { d = slk[j]; p = j; }
-                    }
-                for(int j = 0; j <= n; j++)
-                    if (vy[j]) { kx[linky[j]] -= d; ky[j] += d; }
-                    else slk[j] -= d;
+const int N = 507, M = 5e3 +7, maxn = 1007;
+const int mod = 1e9+7;
+const ll INF = 1e15+7;
+
+double w[N][N];//边权
+double la[N], lb[N];//左、右部点的顶标
+bool va[N], vb[N];//访问标记，是否在交错树中
+int match[N];//右部点匹配的左部点（一个只能匹配一个嘛）
+int n;
+double delta, upd[N];
+int p[N];
+double c[N];
+
+void bfs(int x)
+{
+    int a, y = 0, y1 = 0;
+
+    for(int i = 1; i <= n; ++ i)
+        p[i] = 0, c[i] = INF;
+
+    match[y] = x;
+
+    do{
+        a = match[y], delta = INF, vb[y] = true;
+        for(int b = 1; b <= n; ++ b){
+            if(!vb[b]){
+                if(c[b] > la[a] + lb[b] - w[a][b])
+                    c[b] = la[a] + lb[b] - w[a][b], p[b] = y;
+                if(c[b] < delta)//Δ还是取最小的
+                    delta = c[b], y1 = b;
             }
-            for(; k; k = pre[k]) linky[k] = linky[pre[k]];
         }
-        int ans = 0;
-        for(int i = 1; i <= n; i++) ans += kx[i] + ky[i];
-        return ans;
-    }
+        for(int b = 0; b <= n; ++ b)
+            if(vb[b])
+                la[match[b]] -= delta, lb[b] += delta;
+            else c[b] -= delta;
+        y = y1;
+    }while(match[y]);
+    while(y) match[y] = match[p[y]], y = p[y];
+}
 
-    inline void add(int x, int y, int val){ w[x][y] = val; }
+double KM()
+{
+    for(int i = 1; i <= n; ++ i)
+        match[i] = lb[i] = la[i] = 0;
+    for(int i = 1; i <= n; ++ i){
+        for(int j = 1; j <= n; ++ j)
+            vb[j] = false;
+        bfs(i);
+    }
+    double res = 0;
+    for(int y = 1; y <= n; ++ y)
+        res += w[match[y]][y];
+    return res;
 }
 \end{minted}
 
@@ -326,44 +350,19 @@ namespace RMatch{
 \subsection{4.二分图匹配}\label{ux4e8cux5206ux56feux5339ux914d}}
 
 \begin{minted}[fontsize=\footnotesize,breaklines,linenos]{cpp}
-/*
-! + 最小覆盖数 = 最大匹配数
-! + 最大独立集 = 顶点数 - 二分图匹配数
-! + DAG 最小路径覆盖数 = 结点数 - 拆点后二分图最大匹配数
-*/
-
-const int N = 1e3 + 10;
-struct MaxMatch {   
-    int n;
-    vector<int> g[N];
-    int vis[N], left[N], clk;
-
-    void init(int n) {
-        this->n = n;
-        for(int i = 0; i <= n; i++) g[i].clear();
-        memset(left, -1, sizeof left);
-        memset(vis, -1, sizeof vis);
-    }
-
-    bool dfs(int u) {
-        for (int v: g[u])
-            if (vis[v] != clk) {
-                vis[v] = clk;
-                if (left[v] == -1 || dfs(left[v])) {
-                    left[v] = u;
-                    return true;
-                }
-            }
-        return false;
-    }
-
-    int match() {
-        int ret = 0;
-        for (clk = 0; clk <= n; ++clk)
-            if (dfs(clk)) ++ret;
-        return ret;
-    }
-};
+bool dfs(int u, int tag)
+{
+    if (vis[u] == tag) return false; // 即说明已经被访问了,就不需要清空了
+    // 其实只是将bool改成用数字标记，快的也很有限
+    vis[u] = tag;
+    for (auto v : e[u])
+        if(!pre[v] || dfs(pre[v], tag))
+        {
+            pre[v] = u;
+            return true;
+        }
+    return false;
+}
 \end{minted}
 
 \hypertarget{ux62d3ux6251ux6392ux5e8f}{%
