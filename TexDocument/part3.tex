@@ -141,13 +141,41 @@ struct SAM{
             if(len[q] == len[p] + 1) fa[np] = q;
             else {
                 int nq = ++tot;
-                for(int i = 0; i < 26; i++) ch[nq][i] = ch[q][i];
+                for(int i = 0; i < 26; i++) ch[nq][i] = ch[q][i]; //for(int i = 0; i < 26; i++) ch[nq][i] = ch[q][i];
                 fa[nq] = fa[q], fa[np] = fa[q] = nq, len[nq] = len[p] + 1;
                 for(; ch[p][x] == q; p = fa[p]) ch[p][x] = nq;
             }
         }
     }
 }sam;
+\end{minted}
+
+\begin{itemize}
+\tightlist
+\item
+  最长公共子串
+\end{itemize}
+
+\begin{minted}[fontsize=\footnotesize,breaklines,linenos]{cpp}
+//*最长公共子串
+string lcs(const string &T) {
+    int v = 0, l = 0, best = 0, bestpos = 0;
+    for (int i = 0; i < T.size(); i++) {
+        while (v && !sam.ch[v][T[i] - 'a']) {
+            v = sam.fa[v];
+            l = sam.len[v];
+        }   
+        if (sam.ch[v][T[i] - 'a']) {
+            v = sam.ch[v][T[i] - 'a'];
+            l++;
+        }
+        if (l > best) {
+            best = l;
+            bestpos = i;
+        }
+    }
+    return T.substr(bestpos - best + 1, best);
+}
 \end{minted}
 
 \begin{itemize}
@@ -386,6 +414,184 @@ namespace lct_sam {
         G[1] = null;
     }
 }
+\end{minted}
+
+\begin{itemize}
+\tightlist
+\item
+  维护区间本质不同字串数目
+\item
+  给你一个长度为\(n\)的字符串\(s\)，\(m\)次询问，第\(i\)次询问\(s\)上的一个区间\([l_i,r_i]\)上有多少个本质不同的子串
+\end{itemize}
+
+\begin{minted}[fontsize=\footnotesize,breaklines,linenos]{cpp}
+#include<bits/stdc++.h>
+using namespace std;
+#define Re register int
+typedef long long ll;
+
+const int N = 200005;
+struct info
+{
+    int id, t;
+};
+int n, m, lst, num, res, g[N], ls[N], len[N], lk[N], ch[N][28], lt[N], son[N][2];
+char s[N];
+bool lz[N];
+ll sum[N << 2], ad[N << 2], ans[N];
+vector<info> q[N];
+
+inline int read()
+{
+    char c = getchar();
+    int ans = 0;
+    while (c < 48 || c > 57) c = getchar();
+    while (c >= 48 && c <= 57) ans = (ans << 3) + (ans << 1) + (c ^ 48), c = getchar();
+    return ans;
+}
+
+inline void write(ll x)
+{
+    int num = 0;
+    char sc[25];
+    if (!x) sc[num = 1] = 48;
+    while (x) sc[++num] = x % 10 + 48, x /= 10;
+    while (num) putchar(sc[num--]);
+    putchar('\n');
+}
+
+inline void push_down(int id, int l, int mid, int r)
+{
+    sum[id << 1] += ad[id] * (mid - l + 1), sum[id << 1 | 1] += ad[id] * (r - mid);
+    ad[id << 1] += ad[id], ad[id << 1 | 1] += ad[id];
+    ad[id] = 0;
+}
+
+inline void modfy(int id, int l, int r, int x, int y, int z)
+{
+    if (x <= l && r <= y)
+    {
+        sum[id] += 1ll * z * (r - l + 1), ad[id] += z;
+        return;
+    }
+    int mid = l + r >> 1;
+    if (ad[id]) push_down(id, l, mid, r);
+    if (x <= mid) modfy(id << 1, l, mid, x, y, z);
+    if (y > mid) modfy(id << 1 | 1, mid + 1, r, x, y, z);
+    sum[id] = sum[id << 1] + sum[id << 1 | 1];
+}
+
+inline ll que(int id, int l, int r, int x, int y)
+{
+    if (x <= l && r <= y) return sum[id];
+    int mid = l + r >> 1;
+    ll ans = 0;
+    if (ad[id]) push_down(id, l, mid, r);
+    if (x <= mid) ans = que(id << 1, l, mid, x, y);
+    if (y > mid) ans += que(id << 1 | 1, mid + 1, r, x, y);
+    return ans;
+}
+
+inline bool check(int x)
+{
+    return son[lk[x]][0] == x || son[lk[x]][1] == x;
+}
+
+inline void pushdown(int x)
+{
+    if (son[x][0]) lt[son[x][0]] = lt[x], lz[son[x][0]] = 1;
+    if (son[x][1]) lt[son[x][1]] = lt[x], lz[son[x][1]] = 1;
+    lz[x] = 0;
+}
+
+inline void rotate(int x)
+{
+    int y = lk[x], z = lk[y];
+    bool t = son[y][1] ^ x;
+    if (check(y)) son[z][son[z][1] == y] = x;
+    lk[x] = z, lk[y] = x;
+    if (son[x][t]) lk[son[x][t]] = y;
+    son[y][t ^ 1] = son[x][t], son[x][t] = y;
+}
+
+inline void splay(int x)
+{
+    g[res = 1] = x;
+    while (check(g[res])) g[res + 1] = lk[g[res]], ++res;
+    while (res)
+    {
+        if (lz[g[res]]) pushdown(g[res]);
+        --res;
+    }
+    while (check(x))
+    {
+        int y = lk[x];
+        if (check(y)) rotate(((son[y][1] == x) ^ (son[lk[y]][1] == y)) ? x : y);
+        rotate(x);
+    }
+}
+
+inline int find(int x)
+{
+    if (!x) return 0;
+    splay(x);
+    while (son[x][1]) x = son[x][1];
+    return len[x];
+}
+
+inline void access(int x, int y)
+{
+    for (Re i = 0; x; x = lk[i = x])
+    {
+        splay(x);
+        if (lz[x]) pushdown(x);
+        if (lt[x]) modfy(1, 1, n, lt[x] - len[x] + 1, lt[x] - len[lk[x]], -1);
+        son[x][1] = i;
+    }
+    splay(1), lt[1] = y, lz[1] = 1;
+}
+
+inline void ins(int x)
+{
+    int y = ++num;
+    len[y] = len[lst] + 1;
+    while (lst && !ch[lst][x]) ch[lst][x] = y, lst = lk[lst];
+    if (lst)
+    {
+        int q = ch[lst][x];
+        if (len[q] == len[lst] + 1) lk[y] = q;
+        else
+        {
+            len[++num] = len[lst] + 1, lk[num] = lk[q], lk[q] = lk[y] = num;
+            memcpy(ch[num], ch[q], sizeof ch[num]);
+            while (lst && ch[lst][x] == q) ch[lst][x] = num, lst = lk[lst];
+        }
+    }
+    else lk[y] = 1;
+    lst = y;
+}
+
+int main()
+{
+    scanf("%s", s + 1);
+    n = strlen(s + 1), m = read();
+    for (Re i = 0; i < m; ++i)
+    {
+        int u = read(), v = read();
+        q[v].push_back(info{i, u});
+    }
+    lst = num = 1;
+    for (Re i = 1; i <= n; ++i) ins(s[i] - 97), ls[i] = lst;
+    for (Re i = 1; i <= n; ++i)
+    {
+        access(ls[i], i), modfy(1, 1, n, 1, i, 1);
+        int u = q[i].size();
+        for (Re j = 0; j < u; ++j) ans[q[i][j].id] = que(1, 1, n, q[i][j].t, i);
+    }
+    for (Re i = 0; i < m; ++i) write(ans[i]);
+    return 0;
+}
+
 \end{minted}
 
 \hypertarget{ux56deux6587ux81eaux52a8ux673a}{%
