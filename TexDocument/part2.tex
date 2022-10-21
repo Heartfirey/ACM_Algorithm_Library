@@ -2035,6 +2035,285 @@ inline void solve(){
 }
 \end{minted}
 
+\hypertarget{link-cut-tree}{%
+\subsection{15.Link Cut Tree}\label{link-cut-tree}}
+
+\hypertarget{ux65e0ux6839ux6811ux7248ux672cmakeroot}{%
+\subsubsection{(1).无根树版本(MakeRoot)}\label{ux65e0ux6839ux6811ux7248ux672cmakeroot}}
+
+模板题：带修树上路径异或
+
+\begin{minted}[fontsize=\footnotesize,breaklines,linenos]{cpp}
+#include <bits/stdc++.h>
+#pragma gcc optimize("O2")
+#pragma g++ optimize("O2")
+#define int long long
+#define endl '\n'
+using namespace std;
+
+const int N = 1e6 + 10;
+int v[N];
+
+namespace LCT{
+    #define ls ch[x][0]
+    #define rs ch[x][1]
+    #define std_tag 0ll
+
+    int ch[N][2], f[N], sum[N], val[N], tag[N], laz[N], siz[N];
+
+    inline void push_up(int x) { sum[x] = sum[ls] ^ sum[rs] ^ v[x]; }
+    
+    inline void push(int x) { swap(ch[x][0], ch[x][1]), tag[x] ^= 1; }
+
+    inline void push_down(int x) {
+        if(tag[x]){
+            if(ch[x][0]) push(ch[x][0]);
+            if(ch[x][1]) push(ch[x][1]);
+            tag[x] = 0; 
+        } 
+    }
+
+    #define get(x) (ch[f[x]][1] == x)                        // 查询节点X是父亲的哪个儿子
+    #define isRoot(x) (ch[f[x]][0] != x && ch[f[x]][1] != x) // 判断X是否是所在树的根
+
+    inline void rotate(int x) { // 将X向上旋转一层
+        int y = f[x], z = f[y], k = get(x);
+        if(!isRoot(y)) ch[z][ch[z][1] == y] = x;
+        ch[y][k] = ch[x][!k], f[ch[x][!k]] = y;
+        ch[x][!k] = y, f[y] = x, f[x] = z;
+        push_up(y); push_up(x);
+    }
+
+    inline void update(int x) { // X所在路径自上向下释放Lazy标记
+        if(!isRoot(x)) update(f[x]);
+        push_down(x);
+    }
+
+    inline void splay(int x) { // 将节点X旋至当前所在平衡树的树根(带LCT性质认子不认父)
+        update(x);
+        for(int fa = f[x]; !isRoot(x); rotate(x), fa = f[x]){
+            if(!isRoot(fa)) rotate(get(fa) == get(x) ? fa : x);
+        }
+        push_up(x);
+    }
+
+    int access(int x) { // 把从根到X的所有点放在一条实链里，使根到X成为一条实路径
+        int p;
+        for(int p = 0; x; x = f[p = x]) splay(x), ch[x][1] = p, push_up(x);
+        return p;
+    }
+
+    void makeRoot(int p) { access(p), splay(p), push(p); } // 使X点成为其所在树的根
+
+    int findRoot(int x) { // 找到X所在树的根节点编号
+        access(x), splay(x);
+        while(ch[x][0]) push_down(x), x = ch[x][0];
+        splay(x);
+        return x;
+    }
+
+    void link(int x, int y) { // 在x,y之间连边
+        makeRoot(x);
+        if(findRoot(y) != x) f[x] = y;
+    }
+    
+    void split(int x, int y) { // 提取出x,y之间的路径
+        makeRoot(x);
+        access(y), splay(y);
+    }
+
+    void cut(int x, int y){ // 删除x,y间的边
+        makeRoot(x);
+        if(findRoot(y) == x && f[y] == x && !ch[y][0]){
+            f[y] = ch[x][1] = 0;
+            push_up(x);
+        }
+    }
+}
+
+inline void solve(){
+    int n, m; cin >> n >> m;
+    for(int i = 1; i <= n; i++) cin >> v[i];
+    while(m--){
+        int op, x, y; cin >> op >> x >> y;
+        switch (op) {
+            case 0: LCT::split(x, y); cout << LCT::sum[y] << endl; break;
+            case 1: LCT::link(x, y); break;
+            case 2: LCT::cut(x, y); break;
+            case 3: LCT::splay(x); v[x] = y;
+        }
+    }
+}
+
+signed main(){
+    ios_base::sync_with_stdio(false), cin.tie(0);
+    int t = 1; //cin >> t;
+    while(t--) solve();
+    return 0;
+}
+\end{minted}
+
+\hypertarget{ux6709ux6839ux6811ux7248ux672c}{%
+\subsubsection{(2).有根树版本}\label{ux6709ux6839ux6811ux7248ux672c}}
+
+模板题：QTREE7(\(multiset\)维护子树最大值)
+
+一棵树，每个点初始有个点权和颜色。
+
+\texttt{0\ u} ：询问所有 \(u,v\) 路径上的最大点权,要满足 \(u,v\)
+路径上所有点的颜色都相同。
+
+\texttt{1\ u} ：反转 \(u\) 的颜色。
+
+\texttt{2\ u\ w} ：把 \(u\) 的点权改成 \(w\) 。
+
+\(color_i\in[0,1]\)，\(w_i\in[-10^9,10^9]\)，\(n,m\le10^5\) 。
+
+\begin{minted}[fontsize=\footnotesize,breaklines,linenos]{cpp}
+#include <bits/stdc++.h>
+#pragma gcc optimize("O2")
+#pragma g++ optimize("O2")
+#define int long long
+#define elif else if
+#define endl '\n'
+using namespace std;
+
+const int N = 2e5 + 10, MOD = 1e9 + 7;
+
+int w[N], c[N], fa[N];
+
+struct LCT{
+    struct Info{
+        int maxx;
+        multiset<int> st;
+    }tree[N];
+    int ch[N][2], f[N], tag[N];
+
+    inline void push_up(int x) { 
+        tree[x].maxx = max({tree[ch[x][0]].maxx, tree[ch[x][1]].maxx, w[x]}); 
+        if(!tree[x].st.empty())
+            tree[x].maxx = max(tree[x].maxx, *tree[x].st.rbegin());
+    }
+
+    inline void push(int x) { swap(ch[x][0], ch[x][1]), tag[x] ^= 1; }
+
+    inline void push_down(int x) {
+        if(tag[x]){
+            if(ch[x][0]) push(ch[x][0]);
+            if(ch[x][1]) push(ch[x][1]);
+            tag[x] = 0;
+        }
+    }
+
+    #define get(x) (ch[f[x]][1] == x)
+    #define isRoot(x) (ch[f[x]][0] != x && ch[f[x]][1] != x)
+
+    inline void rotate(int x){
+        int y = f[x], z = f[y], k = get(x);
+        if(!isRoot(y)) ch[z][ch[z][1] == y] = x;
+        ch[y][k] = ch[x][!k], f[ch[x][!k]] = y;
+        ch[x][!k] = y, f[y] = x, f[x] = z;
+        push_up(y), push_up(x);
+    }
+
+    inline void update(int x){
+        while(!isRoot(x)) update(f[x]);
+        push_down(x);
+    }
+
+    inline void splay(int x){
+        // update(x);
+        for(int fa = f[x]; !isRoot(x); rotate(x), fa = f[x]){
+            if(!isRoot(fa)) rotate(get(fa) == get(x) ? fa : x);
+        }
+        push_up(x);
+    }
+
+    int access(int x){
+        int p;
+        for(p = 0; x; x = f[p = x]){
+            splay(x);
+            if(ch[x][1]) tree[x].st.insert(tree[ch[x][1]].maxx);
+            ch[x][1] = p;
+            if(ch[x][1]) tree[x].st.erase(tree[ch[x][1]].maxx);
+            push_up(x);
+        }
+        return p;
+    }
+
+    int findRoot(int x) {
+        access(x), splay(x);
+        while(ch[x][0]) push_down(x), x = ch[x][0];
+        splay(x);
+        return x;
+    }
+
+    void link(int x, int y){
+        if(!y) return;
+        access(y), splay(y), splay(x);
+        f[x] = y, ch[y][1] = x;
+        push_up(y);
+    }
+
+    void cut(int x, int y){
+        if(!y) return;
+        access(x); splay(x);
+        ch[x][0] = f[ch[x][0]] = 0;
+        push_up(x);
+    }
+}lct[2];
+
+vector<int> g[N];
+
+void dfs(int u, int ufa){
+    for(auto v : g[u]){
+        if(v == ufa) continue;
+        lct[c[v]].link(v, u), fa[v] = u;
+        dfs(v, u);
+    }
+}
+
+inline void solve(){
+    int n = 0; cin >> n;
+    for(int i = 1; i < n; i++) {
+        int u, v; cin >> u >> v;
+        g[u].emplace_back(v);
+        g[v].emplace_back(u);
+    }
+    for(int i = 1; i <= n; i++) cin >> c[i];
+    for(int i = 1; i <= n; i++) cin >> w[i];
+    lct[0].tree[0].maxx = lct[1].tree[0].maxx = -2e9;
+    dfs(1, 0);
+    int q = 0; cin >> q;
+    while(q--){
+        int op = 0, u = 0; cin >> op >> u;
+        if(op == 0) {
+            int ufa = lct[c[u]].findRoot(u);
+            if(c[ufa] == c[u]) cout << lct[c[u]].tree[ufa].maxx << endl;
+            else cout << lct[c[u]].tree[lct[c[u]].ch[ufa][1]].maxx << endl;
+        } elif (op == 1) {
+            lct[c[u]].cut(u, fa[u]);
+            c[u] ^= 1;
+            lct[c[u]].link(u, fa[u]);
+        } else {
+            lct[c[u]].access(u);
+            lct[c[u]].splay(u);
+            cin >> w[u];
+            lct[c[u]].push_up(u);
+        }
+    }
+
+}
+
+signed main(){
+    ios_base::sync_with_stdio(false), cin.tie(0);
+    cout << fixed << setprecision(12);
+    int t = 1; // cin >> t;
+    while(t--) solve();
+    return 0;
+}
+\end{minted}
+
 \hypertarget{exstl}{%
 \subsection{exSTL}\label{exstl}}
 
