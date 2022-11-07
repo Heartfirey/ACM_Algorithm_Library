@@ -119,7 +119,7 @@
   广义后缀自动机如果直接使用以下代码的话会产生一些冗余状态（置 last 为
   1），所以要用拓扑排序。用 len 基数排序不能。
 \item
-  字符集大的话要使用\texttt{map}。
+  字符集大的话要使用 \texttt{map}。
 \item
   树上 dp 时注意边界（root 和 null）。
 \item
@@ -346,6 +346,7 @@ int get_state(int l, int r) {
 
     \begin{enumerate}
     \def\labelenumi{\arabic{enumi}.}
+    \tightlist
     \item
       令这条链每个节点相应的位置在线段树上区间更新
     \item
@@ -406,7 +407,7 @@ namespace DS{
         #define lson ls, l, mid
         #define rson rs, mid + 1, r
         int tree[N << 2], lazy[N << 2];
-        
+      
         inline void push_up(int rt) { tree[rt] = tree[ls] + tree[rs]; }
 
         inline void push(int rt, int val, int c) { tree[rt] += val * c, lazy[rt] += val; }
@@ -478,7 +479,7 @@ namespace DS{
             }
         }
 
-        #define get(x) (ch[f[x]][1] == x)                        
+        #define get(x) (ch[f[x]][1] == x)                      
         #define isRoot(x) (ch[f[x]][0] != x && ch[f[x]][1] != x) 
 
         inline void rotate(int x) {
@@ -545,7 +546,7 @@ inline void solve(){
     int m = 0; cin >> m;
     for(int i = 1; i <= m; i++) {
         int l, r; cin >> l >> r;
-        qr[r].emplace_back(query{l, i});        
+        qr[r].emplace_back(query{l, i});      
     }
     for(int i = 1; i <= n; i++) {
         DS::LCT::access(DS::SAM::pos[i], i);
@@ -606,22 +607,56 @@ namespace pam {
 \end{minted}
 
 \hypertarget{manacher}{%
-\subsection{manacher}\label{manacher}}
+\subsection{Manacher}\label{manacher}}
+
+\(P[i]\)
+的计算方法：假设\(j\)是\(i\)关于\(C\)的镜像点，\(P[j]\)已经求解完毕。
+
+\begin{itemize}
+\tightlist
+\item
+  若\(i \geq R\)，由于\(R\)右侧的字符都没有检查过，因此只能初始化\(P[i] = 1\)然后暴力中心扩展
+\item
+  若\(i < R\)，分两种情况：
+
+  \begin{enumerate}
+  \def\labelenumi{\arabic{enumi}.}
+  \tightlist
+  \item
+    \(j\)的回文串被\(C\)的回文串包含，即\(j\)的回文串左端点比\(C\)回文串的左端点大，按照镜像原理，镜像\(i\)的回文不会超过\(C\)的右端点\(R\)，因此根据\((i + j) / 2 = C\)得\(j = 2C - i\)，故\(P[i] = P[j] = P[2C - i]\)。然后继续用暴力中心扩展法完成\(P[i]\)的计算。
+  \item
+    \(j\)的回文串不被\(C\)的回文串包含，即\(j\)的回文串左端点比\(C\)回文串的左端点小。此时\(i\)回文串的右端点比\(R\)大，但是由于\(R\)右边的字符还没有检查过，只能先让\(P[i]\)被限制在\(R\)之内，有\(P[i] = w =R - i = C + P[i] - i\)，然后继续用暴力中心扩展法完成\(P[i]\)的计算。
+  \end{enumerate}
+\end{itemize}
 
 \begin{minted}[fontsize=\footnotesize,breaklines,linenos]{cpp}
-int RL[N];
-void manacher(int* a, int n) { // "abc" => "#a#b#a#"
-    int r = 0, p = 0;
-    FOR (i, 0, n) {
-        if (i < r) RL[i] = min(RL[2 * p - i], r - i);
-        else RL[i] = 1;
-        while (i - RL[i] >= 0 && i + RL[i] < n && a[i - RL[i]] == a[i + RL[i]])
-            RL[i]++;
-        if (RL[i] + i - 1 > r) { r = RL[i] + i - 1; p = i; }
-    }
-    FOR (i, 0, n) --RL[i];
+int n, p[N << 1];       // p[i]: 以s[i]为中心的回文串半径
+char a[N], s[N << 1];   // a为原始串, s为修改后的串
+
+void change() {
+    n = strlen(a);
+    int k = 0; s[k++] = '$', s[k++] = '#';
+    for(int i = 0; i < n; i++) s[k++] = a[i], s[k++] = '#';
+    s[k++] = '&', n = k;
 }
 
+void manacher() {
+    int R = 0, C = 0;
+    for(int i = 1; i < n; i++) {
+        if(i < R) p[i] = min(p[(C << 1) - i], p[C] + C - i);    // 1.合并处理两种情况
+        else p[i] = 1;                                          //   
+        while(s[i + p[i]] == s[i - p[i]]) p[i]++;               // 2.暴力中心扩展
+        if(p[i] + i > R) R = p[i] + i, C = i;                   // 3.更新最大的R
+    }   
+}
+
+inline void solve() {
+    cin >> a;
+    change(), manacher();
+    int ans = 1;
+    for(int i = 0; i < n; i++) ans = max(ans, p[i]);
+    cout << ans - 1 << endl;
+}
 \end{minted}
 
 \hypertarget{ux54c8ux5e0c}{%
