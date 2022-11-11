@@ -119,7 +119,7 @@
   广义后缀自动机如果直接使用以下代码的话会产生一些冗余状态（置 last 为
   1），所以要用拓扑排序。用 len 基数排序不能。
 \item
-  字符集大的话要使用\texttt{map}。
+  字符集大的话要使用 \texttt{map}。
 \item
   树上 dp 时注意边界（root 和 null）。
 \item
@@ -321,277 +321,247 @@ int get_state(int l, int r) {
 \end{minted}
 
 \begin{itemize}
-\tightlist
-\item
-  配合 LCT
-\end{itemize}
-
-\begin{minted}[fontsize=\footnotesize,breaklines,linenos]{cpp}
-namespace lct_sam {
-    extern struct P *const null;
-    const int M = N;
-    struct P {
-        P *fa, *ls, *rs;
-        int last;
-
-        bool has_fa() { return fa->ls == this || fa->rs == this; }
-        bool d() { return fa->ls == this; }
-        P*& c(bool x) { return x ? ls : rs; }
-        P* up() { return this; }
-        void down() {
-            if (ls != null) ls->last = last;
-            if (rs != null) rs->last = last;
-        }
-        void all_down() { if (has_fa()) fa->all_down(); down(); }
-    } *const null = new P{0, 0, 0, 0}, pool[M], *pit = pool;
-    P* G[N];
-    int t[M][26], len[M] = {-1}, fa[M], sz = 2, last = 1;
-
-    void rot(P* o) {
-        bool dd = o->d();
-        P *f = o->fa, *t = o->c(!dd);
-        if (f->has_fa()) f->fa->c(f->d()) = o; o->fa = f->fa;
-        if (t != null) t->fa = f; f->c(dd) = t;
-        o->c(!dd) = f->up(); f->fa = o;
-    }
-    void splay(P* o) {
-        o->all_down();
-        while (o->has_fa()) {
-            if (o->fa->has_fa())
-                rot(o->d() ^ o->fa->d() ? o : o->fa);
-            rot(o);
-        }
-        o->up();
-    }
-    void access(int last, P* u, P* v = null) {
-        if (u == null) { v->last = last; return; }
-        splay(u);
-        P *t = u;
-        while (t->ls != null) t = t->ls;
-        int L = len[fa[t - pool]] + 1, R = len[u - pool];
-        
-        if (u->last) bit::add(u->last - R + 2, u->last - L + 2, 1);
-        else bit::add(1, 1, R - L + 1);
-        bit::add(last - R + 2, last - L + 2, -1);
-        
-        u->rs = v;
-        access(last, u->up()->fa, u);
-    }
-    void insert(P* u, P* v, P* t) {
-        if (v != null) { splay(v); v->rs = null; }
-        splay(u);
-        u->fa = t; t->fa = v;
-    }
-
-    void ins(int ch, int pp) {
-        int p = last, np = last = sz++;
-        len[np] = len[p] + 1;
-        for (; p && !t[p][ch]; p = fa[p]) t[p][ch] = np;
-        if (!p) fa[np] = 1;
-        else {
-            int q = t[p][ch];
-            if (len[p] + 1 == len[q]) { fa[np] = q; G[np]->fa = G[q]; }
-            else {
-                int nq = sz++; len[nq] = len[p] + 1;
-                memcpy(t[nq], t[q], sizeof t[0]);
-                insert(G[q], G[fa[q]], G[nq]);
-                G[nq]->last = G[q]->last;
-                fa[nq] = fa[q];
-                fa[np] = fa[q] = nq;
-                G[np]->fa = G[nq];
-                for (; t[p][ch] == q; p = fa[p]) t[p][ch] = nq;
-            }
-        }
-        access(pp + 1, G[np]);
-    }
-
-    void init() {
-        ++pit;
-        FOR (i, 1, N) {
-            G[i] = pit++;
-            G[i]->ls = G[i]->rs = G[i]->fa = null;
-        }
-        G[1] = null;
-    }
-}
-\end{minted}
-
-\begin{itemize}
-\tightlist
 \item
   维护区间本质不同字串数目
-\item
-  给你一个长度为\(n\)的字符串\(s\)，\(m\)次询问，第\(i\)次询问\(s\)上的一个区间\([l_i,r_i]\)上有多少个本质不同的子串
+
+  \begin{itemize}
+  \item
+    给你一个长度为\(n\)的字符串\(s\)，\(m\)次询问，第\(i\)次询问\(s\)上的一个区间\([l_i,r_i]\)上有多少个本质不同的子串
+  \item
+    将每个本质不同的字符串视为一个连续的区间\([l,r]\)，我们只需要维护左端点最后一次出现的位置即可
+
+    因为需要知道每个子串最后一次出现的位置，所以我们选择对字符串构造后缀自动机，对于某个右端点\$
+    r \(来说，对应到 SAM 上，从最长的那个前缀\) {[} 1 , r {]}
+    \(对应的节点开始，沿着 parent 树到根节点的这条路径上，都是以\) r
+    \(为右端点的子串，设\) pre{[} i {]} \$为节点 i
+    上一次出现时的右端点位置，我们只需要暴跳
+    \(father\)，每次将之前出现过的位置，在线段树上区间更新成 \$-1
+    \(（因为对于每个节点来说，代表的都是一段连续的后缀，所以可以用到线段树的区间更新），最后再将\)
+    {[} 1 , r {]} , {[} 2 , r {]} \ldots{} {[} r , r {]} \(这\) r
+    \(个后缀所代表的子串的左端点，即\) {[} 1 , r {]} \$在线段树上 \$+1
+    \$就好了
+
+    不过问题是，这样暴跳\$ father
+    \$的时间复杂度是不正确的，考虑优化，因为每次选择一条链，自下而上去更新，其本质就是：
+
+    \begin{enumerate}
+    \def\labelenumi{\arabic{enumi}.}
+    \tightlist
+    \item
+      令这条链每个节点相应的位置在线段树上区间更新
+    \item
+      令每个节点都被端点\$ r \(覆盖（也就是将\) pre \(都标记为\) r\$）
+    \end{enumerate}
+
+    这个过程其实就是\$ LCT \(中的\) access
+    \(函数的操作，这样每次更新至多需要更新\) logn \(个\)
+    splay\(，套上线段树就是\) log\^{}2n\(，均摊下来就是\) nlog\^{}2n
+    \$了
+  \end{itemize}
 \end{itemize}
 
 \begin{minted}[fontsize=\footnotesize,breaklines,linenos]{cpp}
-#include<bits/stdc++.h>
+#include <bits/stdc++.h>
+#pragma gcc optimize("O2")
+#pragma g++ optimize("O2")
+#define int long long
+#define endl '\n'
 using namespace std;
-#define Re register int
-typedef long long ll;
 
-const int N = 200005;
-struct info
-{
-    int id, t;
-};
-int n, m, lst, num, res, g[N], ls[N], len[N], lk[N], ch[N][28], lt[N], son[N][2];
-char s[N];
-bool lz[N];
-ll sum[N << 2], ad[N << 2], ans[N];
-vector<info> q[N];
+const int N = 2e5 + 10, MOD = 1e9 + 7;
 
-inline int read()
-{
-    char c = getchar();
-    int ans = 0;
-    while (c < 48 || c > 57) c = getchar();
-    while (c >= 48 && c <= 57) ans = (ans << 3) + (ans << 1) + (c ^ 48), c = getchar();
-    return ans;
-}
+int n = 0;
 
-inline void write(ll x)
-{
-    int num = 0;
-    char sc[25];
-    if (!x) sc[num = 1] = 48;
-    while (x) sc[++num] = x % 10 + 48, x /= 10;
-    while (num) putchar(sc[num--]);
-    putchar('\n');
-}
+namespace DS{
+    namespace SAM{
+        int ch[N << 1][26], fa[N << 1], len[N << 1], vis[N << 1], pos[N << 1];
+        int last, tot;
+        inline void extend(int x){ 
+            int p = last, np = last = ++tot;
+            len[np] = len[p] + 1, vis[np] = 1;
+            for(; p && !ch[p][x]; p = fa[p]) ch[p][x] = np;
+            if(!p) fa[np] = 1;
+            else{
+                int q = ch[p][x];
+                if(len[q] == len[p] + 1) fa[np] = q;
+                else {
+                    int nq = ++tot;
+                    for(int i = 0; i < 26; i++) ch[nq][i] = ch[q][i];
+                    fa[nq] = fa[q], fa[np] = fa[q] = nq, len[nq] = len[p] + 1;
+                    for(; ch[p][x] == q; p = fa[p]) ch[p][x] = nq;
+                }
+            }
+        }   
 
-inline void push_down(int id, int l, int mid, int r)
-{
-    sum[id << 1] += ad[id] * (mid - l + 1), sum[id << 1 | 1] += ad[id] * (r - mid);
-    ad[id << 1] += ad[id], ad[id << 1 | 1] += ad[id];
-    ad[id] = 0;
-}
-
-inline void modfy(int id, int l, int r, int x, int y, int z)
-{
-    if (x <= l && r <= y)
-    {
-        sum[id] += 1ll * z * (r - l + 1), ad[id] += z;
-        return;
-    }
-    int mid = l + r >> 1;
-    if (ad[id]) push_down(id, l, mid, r);
-    if (x <= mid) modfy(id << 1, l, mid, x, y, z);
-    if (y > mid) modfy(id << 1 | 1, mid + 1, r, x, y, z);
-    sum[id] = sum[id << 1] + sum[id << 1 | 1];
-}
-
-inline ll que(int id, int l, int r, int x, int y)
-{
-    if (x <= l && r <= y) return sum[id];
-    int mid = l + r >> 1;
-    ll ans = 0;
-    if (ad[id]) push_down(id, l, mid, r);
-    if (x <= mid) ans = que(id << 1, l, mid, x, y);
-    if (y > mid) ans += que(id << 1 | 1, mid + 1, r, x, y);
-    return ans;
-}
-
-inline bool check(int x)
-{
-    return son[lk[x]][0] == x || son[lk[x]][1] == x;
-}
-
-inline void pushdown(int x)
-{
-    if (son[x][0]) lt[son[x][0]] = lt[x], lz[son[x][0]] = 1;
-    if (son[x][1]) lt[son[x][1]] = lt[x], lz[son[x][1]] = 1;
-    lz[x] = 0;
-}
-
-inline void rotate(int x)
-{
-    int y = lk[x], z = lk[y];
-    bool t = son[y][1] ^ x;
-    if (check(y)) son[z][son[z][1] == y] = x;
-    lk[x] = z, lk[y] = x;
-    if (son[x][t]) lk[son[x][t]] = y;
-    son[y][t ^ 1] = son[x][t], son[x][t] = y;
-}
-
-inline void splay(int x)
-{
-    g[res = 1] = x;
-    while (check(g[res])) g[res + 1] = lk[g[res]], ++res;
-    while (res)
-    {
-        if (lz[g[res]]) pushdown(g[res]);
-        --res;
-    }
-    while (check(x))
-    {
-        int y = lk[x];
-        if (check(y)) rotate(((son[y][1] == x) ^ (son[lk[y]][1] == y)) ? x : y);
-        rotate(x);
-    }
-}
-
-inline int find(int x)
-{
-    if (!x) return 0;
-    splay(x);
-    while (son[x][1]) x = son[x][1];
-    return len[x];
-}
-
-inline void access(int x, int y)
-{
-    for (Re i = 0; x; x = lk[i = x])
-    {
-        splay(x);
-        if (lz[x]) pushdown(x);
-        if (lt[x]) modfy(1, 1, n, lt[x] - len[x] + 1, lt[x] - len[lk[x]], -1);
-        son[x][1] = i;
-    }
-    splay(1), lt[1] = y, lz[1] = 1;
-}
-
-inline void ins(int x)
-{
-    int y = ++num;
-    len[y] = len[lst] + 1;
-    while (lst && !ch[lst][x]) ch[lst][x] = y, lst = lk[lst];
-    if (lst)
-    {
-        int q = ch[lst][x];
-        if (len[q] == len[lst] + 1) lk[y] = q;
-        else
-        {
-            len[++num] = len[lst] + 1, lk[num] = lk[q], lk[q] = lk[y] = num;
-            memcpy(ch[num], ch[q], sizeof ch[num]);
-            while (lst && ch[lst][x] == q) ch[lst][x] = num, lst = lk[lst];
+        void build(string s) {
+            last = tot = 1;
+            int len = s.size();
+            s = '@' + s;
+            for(int i = 1; i <= len; i++) extend(s[i] - 'a'), pos[i] = last;
         }
     }
-    else lk[y] = 1;
-    lst = y;
+
+    namespace SegTree{
+        #define ls rt << 1
+        #define rs rt << 1 | 1
+        #define lson ls, l, mid
+        #define rson rs, mid + 1, r
+        int tree[N << 2], lazy[N << 2];
+      
+        inline void push_up(int rt) { tree[rt] = tree[ls] + tree[rs]; }
+
+        inline void push(int rt, int val, int c) { tree[rt] += val * c, lazy[rt] += val; }
+
+        inline void push_down(int rt, int c) {
+            if(lazy[rt]) {
+                push(ls, lazy[rt], (c - (c >> 1)));
+                push(rs, lazy[rt], (c >> 1));
+                lazy[rt] = 0;
+            }
+        }
+
+        void build(int rt, int l, int r){
+            tree[rt] = lazy[rt] = 0;
+            if(l == r) return;
+            int mid = l + r >> 1;
+            build(lson), build(rson);
+        }
+
+        void update(int rt, int l, int r, int L, int R, int val) {
+            if(l >= L && r <= R) return push(rt, val, r - l + 1);
+            push_down(rt, r - l + 1);
+            int mid = l + r >> 1;
+            if(mid >= L) update(lson, L, R, val);
+            if(mid < R) update(rson, L, R, val);
+            push_up(rt);
+        }
+
+        int query(int rt, int l, int r, int L, int R) {
+            if(l >= L && r <= R) return tree[rt];
+            push_down(rt, r - l + 1);
+            int mid = l + r >> 1, sum = 0;
+            if(mid >= L) sum += query(lson, L, R);
+            if(mid < R) sum += query(rson, L, R);
+            return sum;
+        }
+        #undef ls
+        #undef rs
+        #undef lson
+        #undef rson
+    }
+
+    namespace LCT{
+        #define ls ch[x][0]
+        #define rs ch[x][1]
+
+        struct Info{
+            int len, minn, pre, tag_chg;
+        }tree[N];
+
+        int ch[N][2], f[N], tag[N];
+
+        inline void push_up(int x) { tree[x].minn = min({tree[x].len, tree[ls].minn, tree[rs].minn}); }
+
+        inline void push(int x) { swap(ls, rs), tag[x] ^= 1; }
+
+        inline void push_chg(int x, int v) { tree[x].pre = tree[x].tag_chg = v; }
+
+        inline void push_down(int x) {
+            if(tag[x]) {
+                if(ls) push(ls);
+                if(rs) push(rs);
+                tag[x] = 0;
+            }
+            if(tree[x].tag_chg) {
+                if(ls) push_chg(ls, tree[x].tag_chg);
+                if(rs) push_chg(rs, tree[x].tag_chg);
+                tree[x].tag_chg = 0;
+            }
+        }
+
+        #define get(x) (ch[f[x]][1] == x)                      
+        #define isRoot(x) (ch[f[x]][0] != x && ch[f[x]][1] != x) 
+
+        inline void rotate(int x) {
+            int y = f[x], z = f[y], k = get(x);
+            if(!isRoot(y)) ch[z][ch[z][1] == y] = x;
+            ch[y][k] = ch[x][!k], f[ch[x][!k]] = y;
+            ch[x][!k] = y, f[y] = x, f[x] = z;
+            push_up(y); push_up(x);
+        }
+
+        inline void update(int x) { 
+            if(!isRoot(x)) update(f[x]);
+            push_down(x);
+        }
+
+        inline void splay(int x) {
+            update(x);
+            for(int fa = f[x]; !isRoot(x); rotate(x), fa = f[x]){
+                if(!isRoot(fa)) rotate(get(fa) == get(x) ? fa : x);
+            }
+            push_up(x);
+        }
+
+        int access(int x, int pos) {
+            int p;
+            for(p = 0; x; x = f[p = x]){
+                splay(x), ch[x][1] = p, push_up(x);
+                if(tree[x].pre) {
+                    int upl = tree[x].pre - SAM::len[x] + 1;
+                    int upr = tree[x].pre - tree[x].minn + 1;
+                    // cout << "LCT Operation SegTree -> Part(" << upl << ", " << upr << "), add value -1\n";
+                    SegTree::update(1, 1, n, upl, upr, -1);
+                }
+            }
+            splay(p);
+            push_chg(p, pos);
+            SegTree::update(1, 1, n, 1, pos, 1);
+            // cout << endl;
+            return p;
+        }
+
+        void build() {
+            tree[0].minn = 1e18;
+            for(int i = 1; i <= SAM::tot; i++) {
+                f[i] = SAM::fa[i];
+                tree[i].len = tree[i].minn = SAM::len[SAM::fa[i]] + 1;
+                tree[i].pre = tree[i].tag_chg = ch[i][0] = ch[i][1] = 0;
+            }
+        }
+        #undef ls
+        #undef rs
+    }
 }
 
-int main()
-{
-    scanf("%s", s + 1);
-    n = strlen(s + 1), m = read();
-    for (Re i = 0; i < m; ++i)
-    {
-        int u = read(), v = read();
-        q[v].push_back(info{i, u});
+struct query{ int l, id; };
+vector<query> qr[N];
+int ans[N];
+
+inline void solve(){
+    string s; cin >> s, n = s.size();
+    DS::SAM::build(s);
+    DS::SegTree::build(1, 1, n);
+    DS::LCT::build();
+    int m = 0; cin >> m;
+    for(int i = 1; i <= m; i++) {
+        int l, r; cin >> l >> r;
+        qr[r].emplace_back(query{l, i});      
     }
-    lst = num = 1;
-    for (Re i = 1; i <= n; ++i) ins(s[i] - 97), ls[i] = lst;
-    for (Re i = 1; i <= n; ++i)
-    {
-        access(ls[i], i), modfy(1, 1, n, 1, i, 1);
-        int u = q[i].size();
-        for (Re j = 0; j < u; ++j) ans[q[i][j].id] = que(1, 1, n, q[i][j].t, i);
+    for(int i = 1; i <= n; i++) {
+        DS::LCT::access(DS::SAM::pos[i], i);
+        for(auto &[l, id] : qr[i]) ans[id] = DS::SegTree::query(1, 1, n, l, i);
     }
-    for (Re i = 0; i < m; ++i) write(ans[i]);
+    for(int i = 1; i <= m; i++) cout << ans[i] << endl;
+}
+
+signed main(){
+    ios_base::sync_with_stdio(false), cin.tie(0);
+    cout << fixed << setprecision(12);
+    int t = 1; // cin >> t;
+    while(t--) solve();
     return 0;
 }
-
 \end{minted}
 
 \hypertarget{ux56deux6587ux81eaux52a8ux673a}{%
@@ -637,22 +607,56 @@ namespace pam {
 \end{minted}
 
 \hypertarget{manacher}{%
-\subsection{manacher}\label{manacher}}
+\subsection{Manacher}\label{manacher}}
+
+\(P[i]\)
+的计算方法：假设\(j\)是\(i\)关于\(C\)的镜像点，\(P[j]\)已经求解完毕。
+
+\begin{itemize}
+\tightlist
+\item
+  若\(i \geq R\)，由于\(R\)右侧的字符都没有检查过，因此只能初始化\(P[i] = 1\)然后暴力中心扩展
+\item
+  若\(i < R\)，分两种情况：
+
+  \begin{enumerate}
+  \def\labelenumi{\arabic{enumi}.}
+  \tightlist
+  \item
+    \(j\)的回文串被\(C\)的回文串包含，即\(j\)的回文串左端点比\(C\)回文串的左端点大，按照镜像原理，镜像\(i\)的回文不会超过\(C\)的右端点\(R\)，因此根据\((i + j) / 2 = C\)得\(j = 2C - i\)，故\(P[i] = P[j] = P[2C - i]\)。然后继续用暴力中心扩展法完成\(P[i]\)的计算。
+  \item
+    \(j\)的回文串不被\(C\)的回文串包含，即\(j\)的回文串左端点比\(C\)回文串的左端点小。此时\(i\)回文串的右端点比\(R\)大，但是由于\(R\)右边的字符还没有检查过，只能先让\(P[i]\)被限制在\(R\)之内，有\(P[i] = w =R - i = C + P[i] - i\)，然后继续用暴力中心扩展法完成\(P[i]\)的计算。
+  \end{enumerate}
+\end{itemize}
 
 \begin{minted}[fontsize=\footnotesize,breaklines,linenos]{cpp}
-int RL[N];
-void manacher(int* a, int n) { // "abc" => "#a#b#a#"
-    int r = 0, p = 0;
-    FOR (i, 0, n) {
-        if (i < r) RL[i] = min(RL[2 * p - i], r - i);
-        else RL[i] = 1;
-        while (i - RL[i] >= 0 && i + RL[i] < n && a[i - RL[i]] == a[i + RL[i]])
-            RL[i]++;
-        if (RL[i] + i - 1 > r) { r = RL[i] + i - 1; p = i; }
-    }
-    FOR (i, 0, n) --RL[i];
+int n, p[N << 1];       // p[i]: 以s[i]为中心的回文串半径
+char a[N], s[N << 1];   // a为原始串, s为修改后的串
+
+void change() {
+    n = strlen(a);
+    int k = 0; s[k++] = '$', s[k++] = '#';
+    for(int i = 0; i < n; i++) s[k++] = a[i], s[k++] = '#';
+    s[k++] = '&', n = k;
 }
 
+void manacher() {
+    int R = 0, C = 0;
+    for(int i = 1; i < n; i++) {
+        if(i < R) p[i] = min(p[(C << 1) - i], p[C] + C - i);    // 1.合并处理两种情况
+        else p[i] = 1;                                          //   
+        while(s[i + p[i]] == s[i - p[i]]) p[i]++;               // 2.暴力中心扩展
+        if(p[i] + i > R) R = p[i] + i, C = i;                   // 3.更新最大的R
+    }   
+}
+
+inline void solve() {
+    cin >> a;
+    change(), manacher();
+    int ans = 1;
+    for(int i = 0; i < n; i++) ans = max(ans, p[i]);
+    cout << ans - 1 << endl;
+}
 \end{minted}
 
 \hypertarget{ux54c8ux5e0c}{%
