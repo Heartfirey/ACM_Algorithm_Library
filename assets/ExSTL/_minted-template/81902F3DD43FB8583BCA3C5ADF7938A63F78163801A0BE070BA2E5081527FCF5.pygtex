@@ -1,0 +1,37 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c+cp}{\PYGZsh{}include}\PYG{+w}{ }\PYG{c+cpf}{\PYGZlt{}bits/stdc++.h\PYGZgt{}}
+\PYG{k}{using}\PYG{+w}{ }\PYG{k}{namespace}\PYG{+w}{ }\PYG{n+nn}{std}\PYG{p}{;}
+\PYG{c+cp}{\PYGZsh{}include}\PYG{+w}{ }\PYG{c+cpf}{\PYGZlt{}ext/pb\PYGZus{}ds/assoc\PYGZus{}container.hpp\PYGZgt{}}
+\PYG{c+cp}{\PYGZsh{}include}\PYG{+w}{ }\PYG{c+cpf}{\PYGZlt{}ext/pb\PYGZus{}ds/priority\PYGZus{}queue.hpp\PYGZgt{}}
+\PYG{k}{using}\PYG{+w}{ }\PYG{k}{namespace}\PYG{+w}{ }\PYG{n+nn}{\PYGZus{}\PYGZus{}gnu\PYGZus{}pbds}\PYG{p}{;}
+\PYG{c+cp}{\PYGZsh{}include}\PYG{+w}{ }\PYG{c+cpf}{\PYGZlt{}cxxabi.h\PYGZgt{}}
+
+\PYG{k}{template}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{k}{typename} \PYG{n+nc}{T}\PYG{o}{\PYGZgt{}}
+\PYG{k+kt}{void}\PYG{+w}{ }\PYG{n}{print\PYGZus{}invalidation\PYGZus{}guarantee}\PYG{p}{()}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{  }\PYG{k}{typedef}\PYG{+w}{ }\PYG{k}{typename} \PYG{n+nc}{\PYGZus{}\PYGZus{}gnu\PYGZus{}pbds}\PYG{o}{::}\PYG{n}{container\PYGZus{}traits}\PYG{o}{\PYGZlt{}}\PYG{n}{T}\PYG{o}{\PYGZgt{}::}\PYG{n}{invalidation\PYGZus{}guarantee}\PYG{+w}{ }\PYG{n}{gute}\PYG{p}{;}
+\PYG{+w}{  }\PYG{n}{cout}\PYG{+w}{ }\PYG{o}{\PYGZlt{}\PYGZlt{}}\PYG{+w}{ }\PYG{n}{abi}\PYG{o}{::}\PYG{n}{\PYGZus{}\PYGZus{}cxa\PYGZus{}demangle}\PYG{p}{(}\PYG{k}{typeid}\PYG{p}{(}\PYG{n}{gute}\PYG{p}{).}\PYG{n}{name}\PYG{p}{(),}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{)}\PYG{+w}{ }\PYG{o}{\PYGZlt{}\PYGZlt{}}\PYG{+w}{ }\PYG{n}{endl}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{main}\PYG{p}{()}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{  }\PYG{k}{typedef}
+\PYG{+w}{      }\PYG{k}{typename} \PYG{n+nc}{\PYGZus{}\PYGZus{}gnu\PYGZus{}pbds}\PYG{o}{::}\PYG{n}{priority\PYGZus{}queue}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{int}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{greater}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{int}\PYG{o}{\PYGZgt{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{pairing\PYGZus{}heap\PYGZus{}tag}\PYG{o}{\PYGZgt{}}
+\PYG{+w}{          }\PYG{n}{pairing}\PYG{p}{;}
+\PYG{+w}{  }\PYG{k}{typedef}
+\PYG{+w}{      }\PYG{k}{typename} \PYG{n+nc}{\PYGZus{}\PYGZus{}gnu\PYGZus{}pbds}\PYG{o}{::}\PYG{n}{priority\PYGZus{}queue}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{int}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{greater}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{int}\PYG{o}{\PYGZgt{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{binary\PYGZus{}heap\PYGZus{}tag}\PYG{o}{\PYGZgt{}}
+\PYG{+w}{          }\PYG{n}{binary}\PYG{p}{;}
+\PYG{+w}{  }\PYG{k}{typedef}
+\PYG{+w}{      }\PYG{k}{typename} \PYG{n+nc}{\PYGZus{}\PYGZus{}gnu\PYGZus{}pbds}\PYG{o}{::}\PYG{n}{priority\PYGZus{}queue}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{int}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{greater}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{int}\PYG{o}{\PYGZgt{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{binomial\PYGZus{}heap\PYGZus{}tag}\PYG{o}{\PYGZgt{}}
+\PYG{+w}{          }\PYG{n}{binomial}\PYG{p}{;}
+\PYG{+w}{  }\PYG{k}{typedef}\PYG{+w}{ }\PYG{k}{typename} \PYG{n+nc}{\PYGZus{}\PYGZus{}gnu\PYGZus{}pbds}\PYG{o}{::}\PYG{n}{priority\PYGZus{}queue}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{int}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{greater}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{int}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{                                              }\PYG{n}{rc\PYGZus{}binomial\PYGZus{}heap\PYGZus{}tag}\PYG{o}{\PYGZgt{}}
+\PYG{+w}{      }\PYG{n}{rc\PYGZus{}binomial}\PYG{p}{;}
+\PYG{+w}{  }\PYG{k}{typedef}\PYG{+w}{ }\PYG{k}{typename} \PYG{n+nc}{\PYGZus{}\PYGZus{}gnu\PYGZus{}pbds}\PYG{o}{::}\PYG{n}{priority\PYGZus{}queue}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{int}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{greater}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{int}\PYG{o}{\PYGZgt{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{thin\PYGZus{}heap\PYGZus{}tag}\PYG{o}{\PYGZgt{}}
+\PYG{+w}{      }\PYG{n}{thin}\PYG{p}{;}
+\PYG{+w}{  }\PYG{n}{print\PYGZus{}invalidation\PYGZus{}guarantee}\PYG{o}{\PYGZlt{}}\PYG{n}{pairing}\PYG{o}{\PYGZgt{}}\PYG{p}{();}
+\PYG{+w}{  }\PYG{n}{print\PYGZus{}invalidation\PYGZus{}guarantee}\PYG{o}{\PYGZlt{}}\PYG{n}{binary}\PYG{o}{\PYGZgt{}}\PYG{p}{();}
+\PYG{+w}{  }\PYG{n}{print\PYGZus{}invalidation\PYGZus{}guarantee}\PYG{o}{\PYGZlt{}}\PYG{n}{binomial}\PYG{o}{\PYGZgt{}}\PYG{p}{();}
+\PYG{+w}{  }\PYG{n}{print\PYGZus{}invalidation\PYGZus{}guarantee}\PYG{o}{\PYGZlt{}}\PYG{n}{rc\PYGZus{}binomial}\PYG{o}{\PYGZgt{}}\PYG{p}{();}
+\PYG{+w}{  }\PYG{n}{print\PYGZus{}invalidation\PYGZus{}guarantee}\PYG{o}{\PYGZlt{}}\PYG{n}{thin}\PYG{o}{\PYGZgt{}}\PYG{p}{();}
+\PYG{+w}{  }\PYG{k}{return}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

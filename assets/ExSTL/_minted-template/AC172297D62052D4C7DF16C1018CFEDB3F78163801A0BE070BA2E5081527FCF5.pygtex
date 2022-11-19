@@ -1,0 +1,34 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k}{template}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}\PYG{k}{class} \PYG{n+nc}{Node\PYGZus{}CItr}\PYG{p}{,}\PYG{+w}{ }\PYG{k}{class} \PYG{n+nc}{Node\PYGZus{}Itr}\PYG{p}{,}\PYG{+w}{ }\PYG{k}{class} \PYG{n+nc}{Cmp\PYGZus{}Fn}\PYG{p}{,}\PYG{+w}{ }\PYG{k}{class} \PYG{n+nc}{\PYGZus{}Alloc}\PYG{o}{\PYGZgt{}}
+\PYG{k}{struct} \PYG{n+nc}{my\PYGZus{}node\PYGZus{}update}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{    }\PYG{k}{virtual}\PYG{+w}{ }\PYG{n}{Node\PYGZus{}CItr}\PYG{+w}{ }\PYG{n+nf}{node\PYGZus{}begin}\PYG{p}{()}\PYG{+w}{ }\PYG{k}{const}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{virtual}\PYG{+w}{ }\PYG{n}{Node\PYGZus{}CItr}\PYG{+w}{ }\PYG{n+nf}{node\PYGZus{}end}\PYG{p}{()}\PYG{+w}{ }\PYG{k}{const}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{;}
+\PYG{+w}{    }\PYG{k}{typedef}\PYG{+w}{ }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{metadata\PYGZus{}type}\PYG{p}{;}\PYG{+w}{ }\PYG{c+c1}{// metadata type: 是指节点上记录的额外信息的类型}
+\PYG{+w}{    }\PYG{c+c1}{// operator() 的功能是将节点it的信息更新为其左右儿子的信息之和，传入的end\PYGZus{}it表示空节点}
+\PYG{+w}{    }\PYG{c+c1}{// it 是Node\PYGZus{}Iter, 用星号进行取值后变为iterator, \PYGZhy{}\PYGZgt{} second即为该节点的mapped\PYGZus{}value}
+\PYG{+w}{    }\PYG{k+kr}{inline}\PYG{+w}{ }\PYG{k+kt}{void}\PYG{+w}{ }\PYG{n+nf}{operator}\PYG{p}{()(}\PYG{n}{Node\PYGZus{}Itr}\PYG{+w}{ }\PYG{n}{it}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{Node\PYGZus{}CItr}\PYG{+w}{ }\PYG{n}{end\PYGZus{}it}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{n}{Node\PYGZus{}Itr}\PYG{+w}{ }\PYG{n}{l}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{it}\PYG{p}{.}\PYG{n}{get\PYGZus{}l\PYGZus{}child}\PYG{p}{(),}\PYG{+w}{ }\PYG{n}{r}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{it}\PYG{p}{.}\PYG{n}{get\PYGZus{}r\PYGZus{}child}\PYG{p}{();}
+\PYG{+w}{        }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{left}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{right}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{;}
+\PYG{+w}{        }\PYG{k}{if}\PYG{p}{(}\PYG{n}{l}\PYG{+w}{ }\PYG{o}{!=}\PYG{+w}{ }\PYG{n}{end\PYGZus{}it}\PYG{p}{)}\PYG{+w}{ }\PYG{n}{left}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{l}\PYG{p}{.}\PYG{n}{get\PYGZus{}metadata}\PYG{p}{();}
+\PYG{+w}{        }\PYG{k}{if}\PYG{p}{(}\PYG{n}{r}\PYG{+w}{ }\PYG{o}{!=}\PYG{+w}{ }\PYG{n}{end\PYGZus{}it}\PYG{p}{)}\PYG{+w}{ }\PYG{n}{right}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{r}\PYG{p}{.}\PYG{n}{get\PYGZus{}metadata}\PYG{p}{();}
+\PYG{+w}{        }\PYG{k}{const\PYGZus{}cast}\PYG{o}{\PYGZlt{}}\PYG{n}{metadata\PYGZus{}type}\PYG{+w}{ }\PYG{o}{\PYGZam{}\PYGZgt{}}\PYG{p}{(}\PYG{n}{it}\PYG{p}{.}\PYG{n}{get\PYGZus{}metadata}\PYG{p}{())}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{left}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{n}{right}\PYG{+w}{ }\PYG{o}{+}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{    }\PYG{k+kr}{inline}\PYG{+w}{ }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n+nf}{order\PYGZus{}of\PYGZus{}key}\PYG{p}{(}\PYG{n}{pair}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{int}\PYG{p}{,}\PYG{+w}{ }\PYG{k+kt}{int}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{x}\PYG{p}{)}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{        }\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{ans}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{0}\PYG{p}{;}
+\PYG{+w}{        }\PYG{n}{Node\PYGZus{}CItr}\PYG{+w}{ }\PYG{n}{it}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{node\PYGZus{}begin}\PYG{p}{();}
+\PYG{+w}{        }\PYG{k}{while}\PYG{p}{(}\PYG{n}{it}\PYG{+w}{ }\PYG{o}{!=}\PYG{+w}{ }\PYG{n}{node\PYGZus{}end}\PYG{p}{())}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{            }\PYG{n}{Node\PYGZus{}CItr}\PYG{+w}{ }\PYG{n}{l}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{it}\PYG{p}{.}\PYG{n}{get\PYGZus{}l\PYGZus{}child}\PYG{p}{();}
+\PYG{+w}{            }\PYG{n}{Node\PYGZus{}CItr}\PYG{+w}{ }\PYG{n}{r}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{it}\PYG{p}{.}\PYG{n}{get\PYGZus{}r\PYGZus{}child}\PYG{p}{();}
+\PYG{+w}{            }\PYG{k}{if}\PYG{p}{(}\PYG{n}{Cmp\PYGZus{}Fn}\PYG{p}{()(}\PYG{n}{x}\PYG{p}{,}\PYG{+w}{ }\PYG{o}{**}\PYG{n}{it}\PYG{p}{))}\PYG{+w}{ }\PYG{n}{it}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{l}\PYG{p}{;}
+\PYG{+w}{            }\PYG{k}{else}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{                }\PYG{n}{ans}\PYG{o}{++}\PYG{p}{;}
+\PYG{+w}{                }\PYG{k}{if}\PYG{p}{(}\PYG{n}{l}\PYG{+w}{ }\PYG{o}{!=}\PYG{+w}{ }\PYG{n}{node\PYGZus{}end}\PYG{p}{())}\PYG{+w}{ }\PYG{n}{ans}\PYG{+w}{ }\PYG{o}{+=}\PYG{+w}{ }\PYG{n}{l}\PYG{p}{.}\PYG{n}{get\PYGZus{}metadata}\PYG{p}{();}
+\PYG{+w}{                }\PYG{n}{it}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{r}\PYG{p}{;}
+\PYG{+w}{            }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{p}{\PYGZcb{}}
+\PYG{+w}{        }\PYG{k}{return}\PYG{+w}{ }\PYG{n}{ans}\PYG{p}{;}
+\PYG{+w}{    }\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{};}
+
+\PYG{n}{tree}\PYG{o}{\PYGZlt{}}\PYG{n}{pair}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{int}\PYG{p}{,}\PYG{+w}{ }\PYG{k+kt}{int}\PYG{o}{\PYGZgt{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{null\PYGZus{}type}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{less}\PYG{o}{\PYGZlt{}}\PYG{n}{pair}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{int}\PYG{p}{,}\PYG{+w}{ }\PYG{k+kt}{int}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{rb\PYGZus{}tree\PYGZus{}tag}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{my\PYGZus{}node\PYGZus{}update}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{tr}\PYG{p}{;}
+\end{Verbatim}

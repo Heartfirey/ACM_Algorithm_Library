@@ -1,0 +1,40 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c+cp}{\PYGZsh{}include}\PYG{+w}{ }\PYG{c+cpf}{\PYGZlt{}algorithm\PYGZgt{}}
+\PYG{c+cp}{\PYGZsh{}include}\PYG{+w}{ }\PYG{c+cpf}{\PYGZlt{}cstdio\PYGZgt{}}
+\PYG{c+cp}{\PYGZsh{}include}\PYG{+w}{ }\PYG{c+cpf}{\PYGZlt{}ext/pb\PYGZus{}ds/priority\PYGZus{}queue.hpp\PYGZgt{}}
+\PYG{c+cp}{\PYGZsh{}include}\PYG{+w}{ }\PYG{c+cpf}{\PYGZlt{}iostream\PYGZgt{}}
+\PYG{k}{using}\PYG{+w}{ }\PYG{k}{namespace}\PYG{+w}{ }\PYG{n+nn}{\PYGZus{}\PYGZus{}gnu\PYGZus{}pbds}\PYG{p}{;}
+\PYG{c+c1}{// 由于面向OIer, 本文以常用堆 : pairing\PYGZus{}heap\PYGZus{}tag作为范例}
+\PYG{c+c1}{// 为了更好的阅读体验，定义宏如下 ：}
+\PYG{c+cp}{\PYGZsh{}define pair\PYGZus{}heap \PYGZus{}\PYGZus{}gnu\PYGZus{}pbds ::priority\PYGZus{}queue\PYGZlt{}int\PYGZgt{}}
+\PYG{n}{pair\PYGZus{}heap}\PYG{+w}{ }\PYG{n}{q1}\PYG{p}{;}\PYG{+w}{  }\PYG{c+c1}{// 大根堆, 配对堆}
+\PYG{n}{pair\PYGZus{}heap}\PYG{+w}{ }\PYG{n}{q2}\PYG{p}{;}
+\PYG{n}{pair\PYGZus{}heap}\PYG{+w}{ }\PYG{o}{::}\PYG{n}{point\PYGZus{}iterator}\PYG{+w}{ }\PYG{n}{id}\PYG{p}{;}\PYG{+w}{  }\PYG{c+c1}{// 一个迭代器}
+
+\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n+nf}{main}\PYG{p}{()}\PYG{+w}{ }\PYG{p}{\PYGZob{}}
+\PYG{+w}{  }\PYG{n}{id}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{q1}\PYG{p}{.}\PYG{n}{push}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{p}{);}
+\PYG{+w}{  }\PYG{c+c1}{// 堆中元素 ： [1];}
+\PYG{+w}{  }\PYG{k}{for}\PYG{+w}{ }\PYG{p}{(}\PYG{k+kt}{int}\PYG{+w}{ }\PYG{n}{i}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{l+m+mi}{2}\PYG{p}{;}\PYG{+w}{ }\PYG{n}{i}\PYG{+w}{ }\PYG{o}{\PYGZlt{}=}\PYG{+w}{ }\PYG{l+m+mi}{5}\PYG{p}{;}\PYG{+w}{ }\PYG{n}{i}\PYG{o}{++}\PYG{p}{)}\PYG{+w}{ }\PYG{n}{q1}\PYG{p}{.}\PYG{n}{push}\PYG{p}{(}\PYG{n}{i}\PYG{p}{);}
+\PYG{+w}{  }\PYG{c+c1}{// 堆中元素 :  [1, 2, 3, 4, 5];}
+\PYG{+w}{  }\PYG{n}{std}\PYG{+w}{ }\PYG{o}{::}\PYG{n}{cout}\PYG{+w}{ }\PYG{o}{\PYGZlt{}\PYGZlt{}}\PYG{+w}{ }\PYG{n}{q1}\PYG{p}{.}\PYG{n}{top}\PYG{p}{()}\PYG{+w}{ }\PYG{o}{\PYGZlt{}\PYGZlt{}}\PYG{+w}{ }\PYG{n}{std}\PYG{+w}{ }\PYG{o}{::}\PYG{n}{endl}\PYG{p}{;}
+\PYG{+w}{  }\PYG{c+c1}{// 输出结果 : 5;}
+\PYG{+w}{  }\PYG{n}{q1}\PYG{p}{.}\PYG{n}{pop}\PYG{p}{();}
+\PYG{+w}{  }\PYG{c+c1}{// 堆中元素 : [1, 2, 3, 4];}
+\PYG{+w}{  }\PYG{n}{id}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{q1}\PYG{p}{.}\PYG{n}{push}\PYG{p}{(}\PYG{l+m+mi}{10}\PYG{p}{);}
+\PYG{+w}{  }\PYG{c+c1}{// 堆中元素 : [1, 2, 3, 4, 10];}
+\PYG{+w}{  }\PYG{n}{q1}\PYG{p}{.}\PYG{n}{modify}\PYG{p}{(}\PYG{n}{id}\PYG{p}{,}\PYG{+w}{ }\PYG{l+m+mi}{1}\PYG{p}{);}
+\PYG{+w}{  }\PYG{c+c1}{// 堆中元素 :  [1, 1, 2, 3, 4];}
+\PYG{+w}{  }\PYG{n}{std}\PYG{+w}{ }\PYG{o}{::}\PYG{n}{cout}\PYG{+w}{ }\PYG{o}{\PYGZlt{}\PYGZlt{}}\PYG{+w}{ }\PYG{n}{q1}\PYG{p}{.}\PYG{n}{top}\PYG{p}{()}\PYG{+w}{ }\PYG{o}{\PYGZlt{}\PYGZlt{}}\PYG{+w}{ }\PYG{n}{std}\PYG{+w}{ }\PYG{o}{::}\PYG{n}{endl}\PYG{p}{;}
+\PYG{+w}{  }\PYG{c+c1}{// 输出结果 : 4;}
+\PYG{+w}{  }\PYG{n}{q1}\PYG{p}{.}\PYG{n}{pop}\PYG{p}{();}
+\PYG{+w}{  }\PYG{c+c1}{// 堆中元素 : [1, 1, 2, 3];}
+\PYG{+w}{  }\PYG{n}{id}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{q1}\PYG{p}{.}\PYG{n}{push}\PYG{p}{(}\PYG{l+m+mi}{7}\PYG{p}{);}
+\PYG{+w}{  }\PYG{c+c1}{// 堆中元素 : [1, 1, 2, 3, 7];}
+\PYG{+w}{  }\PYG{n}{q1}\PYG{p}{.}\PYG{n}{erase}\PYG{p}{(}\PYG{n}{id}\PYG{p}{);}
+\PYG{+w}{  }\PYG{c+c1}{// 堆中元素 : [1, 1, 2, 3];}
+\PYG{+w}{  }\PYG{n}{q2}\PYG{p}{.}\PYG{n}{push}\PYG{p}{(}\PYG{l+m+mi}{1}\PYG{p}{),}\PYG{+w}{ }\PYG{n}{q2}\PYG{p}{.}\PYG{n}{push}\PYG{p}{(}\PYG{l+m+mi}{3}\PYG{p}{),}\PYG{+w}{ }\PYG{n}{q2}\PYG{p}{.}\PYG{n}{push}\PYG{p}{(}\PYG{l+m+mi}{5}\PYG{p}{);}
+\PYG{+w}{  }\PYG{c+c1}{// q1中元素 : [1, 1, 2, 3], q2中元素 : [1, 3, 5];}
+\PYG{+w}{  }\PYG{n}{q2}\PYG{p}{.}\PYG{n}{join}\PYG{p}{(}\PYG{n}{q1}\PYG{p}{);}
+\PYG{+w}{  }\PYG{c+c1}{// q1中无元素，q2中元素 ：[1, 1, 1, 2, 3, 3, 5];}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

@@ -1,0 +1,14 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k}{template}\PYG{+w}{ }\PYG{o}{\PYGZlt{}}
+\PYG{+w}{    }\PYG{k}{typename} \PYG{n+nc}{Key}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{typename} \PYG{n+nc}{Mapped}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{typename} \PYG{n+nc}{Cmp\PYGZus{}Fn}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{std}\PYG{o}{::}\PYG{n}{less}\PYG{o}{\PYGZlt{}}\PYG{n}{Key}\PYG{o}{\PYGZgt{}}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{typename} \PYG{n+nc}{Tag}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{rb\PYGZus{}tree\PYGZus{}tag}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{template}\PYG{o}{\PYGZlt{}}
+\PYG{+w}{        }\PYG{k}{typename} \PYG{n+nc}{Const\PYGZus{}Node\PYGZus{}Iterator}\PYG{p}{,}
+\PYG{+w}{        }\PYG{k}{typename} \PYG{n+nc}{Node\PYGZus{}Iterator}\PYG{p}{,}
+\PYG{+w}{        }\PYG{k}{typename} \PYG{n+nc}{Cmp\PYGZus{}Fn\PYGZus{}}\PYG{p}{,}
+\PYG{+w}{        }\PYG{k}{typename} \PYG{n+nc}{Allocator\PYGZus{}}\PYG{o}{\PYGZgt{}}
+\PYG{+w}{    }\PYG{k}{class} \PYG{n+nc}{Node\PYGZus{}Update}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{null\PYGZus{}tree\PYGZus{}node\PYGZus{}update}\PYG{p}{,}
+\PYG{+w}{    }\PYG{k}{typename} \PYG{n+nc}{Allocator}\PYG{+w}{ }\PYG{o}{=}\PYG{+w}{ }\PYG{n}{std}\PYG{o}{::}\PYG{n}{allocator}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{char}\PYG{o}{\PYGZgt{}\PYGZgt{}}\PYG{+w}{ }\PYG{k}{class} \PYG{n+nc}{tree}\PYG{p}{;}
+\end{Verbatim}

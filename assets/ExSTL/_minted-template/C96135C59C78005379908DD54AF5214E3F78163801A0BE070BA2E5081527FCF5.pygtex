@@ -1,0 +1,11 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k}{typedef}\PYG{+w}{ }\PYG{n}{trie}\PYG{o}{\PYGZlt{}}\PYG{n}{string}\PYG{p}{,}\PYG{n}{null\PYGZus{}type}\PYG{p}{,}\PYG{n}{trie\PYGZus{}string\PYGZus{}access\PYGZus{}traits}\PYG{o}{\PYGZlt{}\PYGZgt{}}\PYG{p}{,}\PYG{n}{pat\PYGZus{}trie\PYGZus{}tag}\PYG{p}{,}\PYG{n}{trie\PYGZus{}prefix\PYGZus{}search\PYGZus{}node\PYGZus{}update}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{tr}\PYG{p}{;}
+\PYG{c+c1}{//第一个参数必须为字符串类型，tag也有别的tag，但pat最快，与tree相同，node\PYGZus{}update支持自定义}
+\PYG{n}{tr}\PYG{p}{.}\PYG{n}{insert}\PYG{p}{(}\PYG{n}{s}\PYG{p}{);}\PYG{+w}{ }\PYG{c+c1}{//插入s}
+\PYG{n}{tr}\PYG{p}{.}\PYG{n}{erase}\PYG{p}{(}\PYG{n}{s}\PYG{p}{);}\PYG{+w}{ }\PYG{c+c1}{//删除s}
+\PYG{n}{tr}\PYG{p}{.}\PYG{n}{join}\PYG{p}{(}\PYG{n}{b}\PYG{p}{);}\PYG{+w}{ }\PYG{c+c1}{//将b并入tr}
+\PYG{n}{pair}\PYG{c+c1}{//pair的使用如下：}
+\PYG{n}{pair}\PYG{o}{\PYGZlt{}}\PYG{n}{tr}\PYG{o}{::}\PYG{n}{iterator}\PYG{p}{,}\PYG{n}{tr}\PYG{o}{::}\PYG{n}{iterator}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{range}\PYG{o}{=}\PYG{n}{base}\PYG{p}{.}\PYG{n}{prefix\PYGZus{}range}\PYG{p}{(}\PYG{n}{x}\PYG{p}{);}
+\PYG{k}{for}\PYG{p}{(}\PYG{n}{tr}\PYG{o}{::}\PYG{n}{iterator}\PYG{+w}{ }\PYG{n}{it}\PYG{o}{=}\PYG{n}{range}\PYG{p}{.}\PYG{n}{first}\PYG{p}{;}\PYG{n}{it}\PYG{o}{!=}\PYG{n}{range}\PYG{p}{.}\PYG{n}{second}\PYG{p}{;}\PYG{n}{it}\PYG{o}{++}\PYG{p}{)}\PYG{+w}{ }\PYG{n}{cout}\PYG{o}{\PYGZlt{}\PYGZlt{}*}\PYG{n}{it}\PYG{o}{\PYGZlt{}\PYGZlt{}}\PYG{l+s+sc}{\PYGZsq{} \PYGZsq{}}\PYG{o}{\PYGZlt{}\PYGZlt{}}\PYG{n}{endl}\PYG{p}{;}
+\PYG{c+c1}{//pair中第一个是起始迭代器，第二个是终止迭代器，遍历过去就可以找到所有字符串了。}
+\end{Verbatim}

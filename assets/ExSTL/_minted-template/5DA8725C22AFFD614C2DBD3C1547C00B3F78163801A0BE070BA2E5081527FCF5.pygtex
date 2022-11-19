@@ -1,0 +1,4 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c+cp}{\PYGZsh{}include}\PYG{+w}{ }\PYG{c+cpf}{\PYGZlt{}bits/extc++.h\PYGZgt{}}\PYG{c+c1}{    //直接全部淦进来}
+\PYG{k}{using}\PYG{+w}{ }\PYG{k}{namespace}\PYG{+w}{ }\PYG{n+nn}{\PYGZus{}\PYGZus{}gnu\PYGZus{}pbds}\PYG{p}{;}
+\end{Verbatim}

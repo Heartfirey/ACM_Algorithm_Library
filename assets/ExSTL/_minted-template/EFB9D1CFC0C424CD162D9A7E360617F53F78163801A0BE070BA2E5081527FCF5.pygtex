@@ -1,0 +1,4 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{n}{cc\PYGZus{}hash\PYGZus{}table}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{int}\PYG{p}{,}\PYG{+w}{ }\PYG{k+kt}{bool}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{h}\PYG{p}{;}\PYG{+w}{  }\PYG{c+c1}{// 拉链法}
+\PYG{n}{gp\PYGZus{}hash\PYGZus{}table}\PYG{o}{\PYGZlt{}}\PYG{k+kt}{int}\PYG{p}{,}\PYG{+w}{ }\PYG{k+kt}{bool}\PYG{o}{\PYGZgt{}}\PYG{+w}{ }\PYG{n}{h}\PYG{p}{;}\PYG{+w}{  }\PYG{c+c1}{// 探测法(推荐)}
+\end{Verbatim}

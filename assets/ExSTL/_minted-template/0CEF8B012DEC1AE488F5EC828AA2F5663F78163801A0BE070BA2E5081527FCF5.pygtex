@@ -1,0 +1,8 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c+cp}{\PYGZsh{}include}\PYG{+w}{ }\PYG{c+cpf}{\PYGZlt{}ext/pb\PYGZus{}ds/assoc\PYGZus{}container.hpp\PYGZgt{}}
+\PYG{c+cp}{\PYGZsh{}include}\PYG{+w}{ }\PYG{c+cpf}{\PYGZlt{}ext/pb\PYGZus{}ds/tree\PYGZus{}policy.hpp\PYGZgt{}}\PYG{c+c1}{    // 引入平衡树}
+\PYG{c+cp}{\PYGZsh{}include}\PYG{+w}{ }\PYG{c+cpf}{\PYGZlt{}ext/pb\PYGZus{}ds/hash\PYGZus{}policy.hpp\PYGZgt{}}\PYG{c+c1}{    // 引入hash}
+\PYG{c+cp}{\PYGZsh{}include}\PYG{+w}{ }\PYG{c+cpf}{\PYGZlt{}ext/pb\PYGZus{}ds/trie\PYGZus{}policy.hpp\PYGZgt{}}\PYG{c+c1}{    // 引入trie}
+\PYG{c+cp}{\PYGZsh{}include}\PYG{+w}{ }\PYG{c+cpf}{\PYGZlt{}ext/pb\PYGZus{}ds/priority\PYGZus{}queue.hpp\PYGZgt{}}\PYG{c+c1}{ // 引入priority\PYGZus{}queue}
+\PYG{k}{using}\PYG{+w}{ }\PYG{k}{namespace}\PYG{+w}{ }\PYG{n+nn}{\PYGZus{}\PYGZus{}gnu\PYGZus{}pbds}\PYG{p}{;}
+\end{Verbatim}

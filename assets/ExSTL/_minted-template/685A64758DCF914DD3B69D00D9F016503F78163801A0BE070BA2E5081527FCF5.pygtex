@@ -1,0 +1,5 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c+cp}{\PYGZsh{}include}\PYG{+w}{ }\PYG{c+cpf}{\PYGZlt{}ext/pb\PYGZus{}ds/priority\PYGZus{}queue.hpp\PYGZgt{}}
+\PYG{k}{using}\PYG{+w}{ }\PYG{k}{namespace}\PYG{+w}{ }\PYG{n+nn}{\PYGZus{}\PYGZus{}gnu\PYGZus{}pbds}\PYG{p}{;}
+\PYG{n}{\PYGZus{}\PYGZus{}gnu\PYGZus{}pbds}\PYG{+w}{ }\PYG{o}{::}\PYG{n}{priority\PYGZus{}queue}\PYG{o}{\PYGZlt{}}\PYG{n}{T}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{Compare}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{Tag}\PYG{p}{,}\PYG{+w}{ }\PYG{n}{Allocator}\PYG{o}{\PYGZgt{}}
+\end{Verbatim}
