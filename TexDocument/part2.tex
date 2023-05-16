@@ -294,11 +294,11 @@ namespace Fenwick{
     inline int query(int l, int r){ return getsum(r) - getsum(l - 1); }
 
     //*查询区间第K大需要权值树状数组！
-    int kth(int i){
+    int kth(int k){
         int cnt = 0, ret = 0;
         for(int i = log2(len); ~i; --i){
             ret += 1 << i;
-            (ret >= len || cnt + tree[ret] >= i) ? (ret -= 1 << i) : (cnt += tree[ret]);
+            (ret >= len || cnt + tree[ret] >= k) ? (ret -= 1 << i) : (cnt += tree[ret]);
         }
         return ret + 1;
     }
